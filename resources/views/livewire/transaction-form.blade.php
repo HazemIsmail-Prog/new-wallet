@@ -124,12 +124,12 @@
     {{-- Modals --}}
     <div x-cloak x-show="showWalletsModal"
         class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-        <div class="bg-white dark:bg-gray-800 p-4 w-[80%] max-w-md rounded-lg shadow-lg"
+        <div class="bg-white dark:bg-gray-900 text-white  p-4 w-[80%] max-w-md rounded-lg shadow-lg"
             @click.away="showWalletsModal = false">
             <h3 class="text-lg font-semibold">Select Wallet</h3>
             <div class="mt-4">
                 @foreach ($this->walletsList->where('id','!=',$this->selectedWallet->id) as $wallet)
-                    <div class="w-full cursor-pointer p-3 bg-white dark:bg-gray-800"
+                    <div class="w-full cursor-pointer p-3 bg-white dark:bg-gray-900"
                         @click="handleSelection('App\\Models\\Wallet',{{ $wallet }})">
                         <div>{{ $wallet->name }}</div>
                         @if ($wallet->totalRemaining < 0)
@@ -152,13 +152,12 @@
 
     <div x-cloak x-show="showContactsModal"
         class="fixed inset-0 z-50  flex items-center justify-center bg-black bg-opacity-50">
-        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg w-[80%] max-w-md shadow-lg"
+        <div class="bg-white dark:bg-gray-900 text-white p-4 rounded-lg w-[80%] max-w-md shadow-lg"
             @click.away="showContactsModal = false">
             <h3 class="text-lg font-semibold">Select Contact</h3>
             <div class="mt-4 h-96 overflow-y-auto">
                 @foreach ($this->contactsList as $contact)
-                
-                    <div class="w-full cursor-pointer p-3 bg-white dark:bg-gray-800"
+                    <div class="w-full cursor-pointer p-3 bg-white dark:bg-gray-900"
                         @click="handleSelection('App\\Models\\Contact',{{ $contact }})">
                         <div>{{ $contact->name }}</div>
                         @if ($contact->available_amount < 0)
@@ -183,12 +182,12 @@
 
     <div x-cloak x-show="showIncomesModal"
         class="fixed inset-0 z-50  flex items-center justify-center bg-black bg-opacity-50">
-        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg w-[80%] max-w-md shadow-lg"
+        <div class="bg-white dark:bg-gray-900 text-white p-4 rounded-lg w-[80%] max-w-md shadow-lg"
             @click.away="showIncomesModal = false">
             <h3 class="text-lg font-semibold">Select Income</h3>
             <div class="mt-4 h-96 overflow-y-auto">
                 @foreach ($this->incomesList as $income)
-                    <div class="w-full cursor-pointer p-3 bg-white dark:bg-gray-800"
+                    <div class="w-full cursor-pointer p-3 bg-white dark:bg-gray-900"
                         @click="handleSelection('App\\Models\\Category',{{ $income }})">
                         <div>{{ $income->name }}</div>
                         @if ($income->available_amount < 0)
@@ -213,12 +212,12 @@
 
     <div x-cloak x-show="showExpensesModal"
         class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg w-[80%] max-w-md shadow-lg"
+        <div class="bg-white dark:bg-gray-900 dark:text-white p-4 rounded-lg w-[80%] max-w-md shadow-lg"
             @click.away="showExpensesModal = false">
             <h3 class="text-lg font-semibold">Select expense</h3>
             <div class="mt-4 h-96 overflow-y-auto">
                 @foreach ($this->expensesList as $expense)
-                    <div class="w-full cursor-pointer p-3 bg-white dark:bg-gray-800"
+                    <div class="w-full cursor-pointer p-3 bg-white dark:bg-gray-900"
                         @click="handleSelection('App\\Models\\Category',{{ $expense }})">
                         <div>{{ $expense->name }}</div>
                         @if ($expense->available_amount < 0)
