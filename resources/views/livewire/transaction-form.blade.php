@@ -161,14 +161,14 @@
                         @click="handleSelection('App\\Models\\Contact',{{ $contact }})">
                         <div>{{ $contact->name }}</div>
                         @if ($contact->available_amount < 0)
-                            <div class="font-extrabold text-red-600 dark:text-red-400">
+                            <div class="font-extrabold text-sm text-red-600 dark:text-red-400">
                                 {{ number_format(abs($contact->available_amount), $this->selectedCountry->decimal_points) }}
                                 <span
                                     class="uppercase text-xs font-thin">{{ $this->selectedCountry->currency }}</span>
                             </div>
                         @endif
                         @if ($contact->available_amount > 0)
-                            <div class="font-extrabold text-green-600 dark:text-green-400">
+                            <div class="font-extrabold text-sm text-green-600 dark:text-green-400">
                                 {{ number_format($contact->available_amount, $this->selectedCountry->decimal_points) }}
                                 <span
                                     class="uppercase text-xs font-thin">{{ $this->selectedCountry->currency }}</span>
