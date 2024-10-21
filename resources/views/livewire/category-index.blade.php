@@ -23,11 +23,11 @@
     <div class="w-full flex flex-col gap-2 mt-2">
 
         <div @class([
-            'flex items-center justify-center gap-1 text-2xl p-3 bg-white rounded-lg font-extrabold',
+            ' text-2xl text-center p-3 bg-white rounded-lg font-extrabold',
             'text-red-600 dark:text-red-400' => $filters['type'] == 'expense',
             'text-green-600 dark:text-green-400' => $filters['type'] == 'income',
         ])>
-            <div>{{ number_format($this->categories->sum('total'), $this->selectedCountry->decimal_points) }}</div>
+            {{ number_format($this->categories->sum('total'), $this->selectedCountry->decimal_points) }}
             <span class=" uppercase text-xs font-thin">{{ $this->selectedCountry->currency }}</span>
 
         </div>
