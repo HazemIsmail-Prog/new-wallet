@@ -8,16 +8,9 @@ class Category extends Model
 {
     protected $guarded = [];
 
-    // Relationship with transactions as the source entity
-    public function outgoingTransactions()
+    public function transactions()
     {
-        return $this->morphMany(Transaction::class, 'target')->where('type','income');
-    }
-
-    // Relationship with transactions as the target entity
-    public function incomingTransactions()
-    {
-        return $this->morphMany(Transaction::class, 'target')->where('type','expense');
+        return $this->morphMany(Transaction::class, 'target');
     }
 
     public function parent_category()
