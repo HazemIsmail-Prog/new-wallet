@@ -124,7 +124,7 @@
     {{-- Modals --}}
     <div x-cloak x-show="showWalletsModal"
         class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-        <div class="bg-white dark:bg-gray-900 text-white  p-4 w-[80%] max-w-md rounded-lg shadow-lg"
+        <div class="bg-white dark:bg-gray-900 dark:text-white  p-4 w-[80%] max-w-md rounded-lg shadow-lg"
             @click.away="showWalletsModal = false">
             <h3 class="text-lg font-semibold">Select Wallet</h3>
             <div class="mt-4">
@@ -152,7 +152,7 @@
 
     <div x-cloak x-show="showContactsModal"
         class="fixed inset-0 z-50  flex items-center justify-center bg-black bg-opacity-50">
-        <div class="bg-white dark:bg-gray-900 text-white p-4 rounded-lg w-[80%] max-w-md shadow-lg"
+        <div class="bg-white dark:bg-gray-900 dark:text-white p-4 rounded-lg w-[80%] max-w-md shadow-lg"
             @click.away="showContactsModal = false">
             <h3 class="text-lg font-semibold">Select Contact</h3>
             <div class="mt-4 h-96 overflow-y-auto">
@@ -182,7 +182,7 @@
 
     <div x-cloak x-show="showIncomesModal"
         class="fixed inset-0 z-50  flex items-center justify-center bg-black bg-opacity-50">
-        <div class="bg-white dark:bg-gray-900 text-white p-4 rounded-lg w-[80%] max-w-md shadow-lg"
+        <div class="bg-white dark:bg-gray-900 dark:text-white p-4 rounded-lg w-[80%] max-w-md shadow-lg"
             @click.away="showIncomesModal = false">
             <h3 class="text-lg font-semibold">Select Income</h3>
             <div class="mt-4 h-96 overflow-y-auto">
