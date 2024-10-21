@@ -11,13 +11,13 @@ class Category extends Model
     // Relationship with transactions as the source entity
     public function outgoingTransactions()
     {
-        return $this->morphMany(Transaction::class, 'source');
+        return $this->morphMany(Transaction::class, 'target')->where('type','income');
     }
 
     // Relationship with transactions as the target entity
     public function incomingTransactions()
     {
-        return $this->morphMany(Transaction::class, 'target');
+        return $this->morphMany(Transaction::class, 'target')->where('type','expense');
     }
 
     public function parent_category()

@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Category;
 use App\Models\Country;
 use App\Models\Transaction;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
@@ -12,6 +13,12 @@ use Livewire\Component;
 
 class TransactionIndex extends Component
 {
+    public array $filters = [
+        'search' => '',
+        'start_date' => '',
+        'end_date' => '',
+    ];
+
     #[Computed()]
     public function selectedCountry()
     {
@@ -30,12 +37,20 @@ class TransactionIndex extends Component
                     Category::class => ['parent_category'],
                 ]);
             }])
+            ->when($this->filters['search'], function (Builder $q) {
+                $q->where('notes', 'like', '%' . $this->filters['search'] . '%');
+            })
+            ->when($this->filters['start_date'], function (Builder $q) {
+                $q->whereDate('date', '>=', $this->filters['start_date']);
+            })
+            ->when($this->filters['end_date'], function (Builder $q) {
+                $q->whereDate('date', '<=', $this->filters['end_date']);
+            })
             ->orderBy('date', 'desc')
             ->get()
             ->groupBy(function ($transaction) {
                 return $transaction->date->format('Y-m-d');
-            })
-            ;
+            });
 
         // Paginate grouped transactions (10 days per page)
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
@@ -62,7 +77,6 @@ class TransactionIndex extends Component
     public function delete(Transaction $transaction)
     {
         $transaction->delete();
-        $this->emit('TransactionsDataChanged');
     }
 
 

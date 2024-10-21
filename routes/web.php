@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\CategoryIndex;
 use App\Livewire\ContactIndex;
 use App\Livewire\CountryIndex;
 use App\Livewire\TransactionForm;
@@ -16,6 +17,7 @@ Route::middleware([
     // Route::get('/settings' , [SettingsController::class,'index'])->name('settings');
     Route::get('/countries', CountryIndex::class)->name('country.index');
     Route::get('/contacts', ContactIndex::class)->name('contact.index');
+    Route::get('/categories', CategoryIndex::class)->name('category.index');
     Route::get('/wallets', WalletIndex::class)->name('wallet.index');
     Route::get('transaction-from/{transaction}',TransactionForm::class)->name('transaction.form');
     Route::get('transaction-from-new/{wallet}',TransactionForm::class)->name('transaction.form.new');

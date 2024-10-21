@@ -24,13 +24,13 @@ class ContactIndex extends Component
         // Retrieve contacts with totalIncoming and totalOutgoing sums
         $contacts = Contact::query()
             ->where('country_id', $this->selectedCountry->id)
-            ->withSum('outgoingTransactions as totalOutgoing', DB::raw('amount / ' . $this->selectedCountry->factor))
-            ->withSum('incomingTransactions as totalIncoming', DB::raw('amount / ' . $this->selectedCountry->factor))
+            ->withSum('outgoingTransactions as totalOutgoing', DB::raw('amount'))
+            ->withSum('incomingTransactions as totalIncoming', DB::raw('amount'))
             ->get();
 
         // Add totalRemaining to each contact and sort by absolute value of totalRemaining
         return $contacts->map(function ($contact) {
-            $contact->totalRemaining = $contact->totalIncoming - $contact->totalOutgoing;
+            $contact->totalRemaining = ($contact->totalIncoming - $contact->totalOutgoing) / $this->selectedCountry->factor;
             return $contact;
         })->sortByDesc(function ($contact) {
             return abs($contact->totalRemaining);

@@ -16,6 +16,14 @@
             </svg>
         </button>
 
+        <div class="flex flex-col gap-1">
+            <input class="w-full border-none rounded-lg" placeholder="Search..." type="text" wire:model.live="filters.search">
+            <div class=" flex items-center gap-1">
+                <input class="w-full border-none rounded-lg" type="date" wire:model.live="filters.start_date">
+                <input class="w-full border-none rounded-lg" type="date" wire:model.live="filters.end_date">
+            </div>
+        </div>
+
         {{-- <div x-show="expanded" class=" rounded-lg mt-2 border dark:border-none">
             <div class=" flex flex-col gap-2">
                 <select wire:model="filter.selected_wallet"
@@ -122,7 +130,7 @@
                                     <div class=" font-extrabold">
                                         {{ $transaction->target->category_id
                                             ? $transaction->target->parent_category->name . ' - ' . $transaction->target->name
-                                            : $transaction->target->name }}
+                                            : @$transaction->target->name }}
                                     </div>
                                     <div class=" font-extralight text-xs">{{ $transaction->target->name }}</div>
                                     <div class=" font-extralight text-xs">{{ $transaction->notes }}</div>
