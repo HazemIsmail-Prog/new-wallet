@@ -123,7 +123,7 @@
 
     {{-- Modals --}}
     <div x-cloak x-show="showWalletsModal"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
         <div class="flex flex-col gap-3 base-bg base-text p-3 rounded-lg w-[90%] max-h-[70%] max-w-md shadow-lg"
             @click.away="showWalletsModal = false">
             <h3 class="text-lg font-semibold">Select Wallet</h3>
@@ -154,7 +154,7 @@
     </div>
 
     <div x-cloak x-show="showContactsModal"
-        class="fixed inset-0 z-50  flex items-center justify-center bg-black bg-opacity-50">
+        class="fixed inset-0 z-50  flex items-center justify-center bg-black bg-opacity-80">
         <div class="flex flex-col gap-3 base-bg base-text p-3 rounded-lg w-[90%] max-h-[70%] max-w-md shadow-lg"
             @click.away="showContactsModal = false">
             <h3 class="text-lg font-semibold">Select Contact</h3>
@@ -185,7 +185,7 @@
     </div>
 
     <div x-cloak x-show="showIncomesModal"
-        class="fixed inset-0 z-50  flex items-center justify-center bg-black bg-opacity-50">
+        class="fixed inset-0 z-50  flex items-center justify-center bg-black bg-opacity-80">
         <div class="bg-white dark:bg-gray-900 dark:text-white p-4 rounded-lg w-[80%] max-w-md shadow-lg"
             @click.away="showIncomesModal = false">
             <h3 class="text-lg font-semibold">Select Income</h3>
@@ -215,7 +215,7 @@
     </div>
 
     <div x-cloak x-show="showExpensesModal"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
         <div class="bg-white dark:bg-gray-900 dark:text-white p-4 rounded-lg w-[80%] max-w-md shadow-lg"
             @click.away="showExpensesModal = false">
             <h3 class="text-lg font-semibold">Select expense</h3>
