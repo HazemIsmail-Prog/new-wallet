@@ -195,5 +195,6 @@
             @endforeach
         </div>
     @endforeach
-    <div>{{ $this->transactions->links() }}</div>
+    <div>{{ $this->transactions->links(data: ['scrollTo' => false]) }}</div>
+
 </div>

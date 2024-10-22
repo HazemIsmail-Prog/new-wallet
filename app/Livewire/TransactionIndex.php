@@ -10,14 +10,22 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class TransactionIndex extends Component
 {
+    use WithPagination;
+
     public array $filters = [
         'search' => '',
         'start_date' => '',
         'end_date' => '',
     ];
+
+    public function updateFilters()
+    {
+        $this->resetPage();
+    }
 
     #[Computed()]
     public function selectedCountry()
