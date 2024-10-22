@@ -30,11 +30,13 @@
 
     @foreach ($this->categories->where('category_id', null) as $category)
         @if ($category->grand_total != 0 && $filters)
-            <div
-                class="rounded-lg secondary-bg base-text divide-y-2 gray-divider shadow-lg overflow-clip">
+            <div class="rounded-lg secondary-bg base-text divide-y-2 gray-divider shadow-lg overflow-clip">
                 <div class=" p-3 primary-bg white-text flex items-center justify-between">
+
+                    
                     <div>
                         <div>{{ $category->name }}</div>
+                        @if ($this->categories->where('category_id', $category->id)->count() > 0)
                         <div @class([
                             'font-extrabold text-xs',
                             'red-text' => $filters['type'] == 'expense',
@@ -50,6 +52,7 @@
                         ])> {{ $category->formatted_sub_categories_total }}
                             <span class=" uppercase text-xs font-thin">{{ $this->selectedCountry->currency }}</span>
                         </div>
+                        @endif
                     </div>
                     <div @class([
                         'font-extrabold',
@@ -60,21 +63,21 @@
                     </div>
                 </div>
                 @if ($this->categories->where('category_id', $category->id)->count() > 0)
-                        @foreach ($this->categories->where('category_id', $category->id) as $sub_category)
-                            @if ($sub_category->total != 0 && $filters)
-                                <div class=" flex items-center justify-between p-3">
-                                    <div>{{ $sub_category->name }}</div>
-                                    <div @class([
-                                        'font-extrabold',
-                                        'red-text' => $filters['type'] == 'expense',
-                                        'green-text' => $filters['type'] == 'income',
-                                    ])> {{ $sub_category->formatted_total }}
-                                        <span
-                                            class=" uppercase text-xs font-thin">{{ $this->selectedCountry->currency }}</span>
-                                    </div>
+                    @foreach ($this->categories->where('category_id', $category->id) as $sub_category)
+                        @if ($sub_category->total != 0 && $filters)
+                            <div class=" flex items-center justify-between p-3">
+                                <div>{{ $sub_category->name }}</div>
+                                <div @class([
+                                    'font-extrabold',
+                                    'red-text' => $filters['type'] == 'expense',
+                                    'green-text' => $filters['type'] == 'income',
+                                ])> {{ $sub_category->formatted_total }}
+                                    <span
+                                        class=" uppercase text-xs font-thin">{{ $this->selectedCountry->currency }}</span>
                                 </div>
-                            @endif
-                        @endforeach
+                            </div>
+                        @endif
+                    @endforeach
                 @endif
             </div>
         @endif
