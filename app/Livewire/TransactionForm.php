@@ -27,35 +27,30 @@ class TransactionForm extends Component
     }
 
     #[Computed()]
-    public function incomesList()
+    public function categories()
     {
         return Category::query()
-            ->leftJoin('transactions', function ($join) {
-                $join->on('categories.id', '=', 'transactions.target_id')
-                    ->where('transactions.target_type', '=', Category::class);
-            })
-            ->select('categories.id', 'categories.name', 'categories.type', 'categories.country_id', DB::raw('COUNT(transactions.id) as transaction_count'))
-            ->where('categories.country_id', $this->selectedCountry->id)
-            ->where('categories.type', 'income')
-            ->groupBy('categories.id', 'categories.name', 'categories.type', 'categories.country_id')
-            ->orderByDesc('transaction_count')
+            ->where('categories.country_id', $this->selectedCountry->id);
+    }
+
+    #[Computed()]
+    public function categoriesList()
+    {
+        return $this->categories()
             ->get();
     }
 
     #[Computed()]
-    public function expensesList()
+    public function mostUsedCategoriesList()
     {
-        return Category::query()
+        return $this->categories()
             ->leftJoin('transactions', function ($join) {
                 $join->on('categories.id', '=', 'transactions.target_id')
                     ->where('transactions.target_type', '=', Category::class);
             })
             ->select('categories.id', 'categories.name', 'categories.type', 'categories.country_id', DB::raw('COUNT(transactions.id) as transaction_count'))
-            ->where('categories.country_id', $this->selectedCountry->id)
-            ->where('categories.type', 'expense')
             ->groupBy('categories.id', 'categories.name', 'categories.type', 'categories.country_id')
-            ->orderByDesc('transaction_count')
-            ->get();
+            ->orderByDesc('transaction_count')->get();
     }
 
     #[Computed()]
@@ -103,10 +98,10 @@ class TransactionForm extends Component
 
         // Add totalRemaining to each contact and sort by absolute value of totalRemaining
         return $contacts->map(function ($contact) {
-            $contact->available_amount = ($contact->totalIncoming - $contact->totalOutgoing) / $this->selectedCountry->factor;
+            $contact->totalRemaining = ($contact->totalIncoming - $contact->totalOutgoing) / $this->selectedCountry->factor;
             return $contact;
         })->sortByDesc(function ($contact) {
-            return abs($contact->available_amount);
+            return abs($contact->totalRemaining);
         });
     }
 

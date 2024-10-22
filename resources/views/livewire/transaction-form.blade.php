@@ -4,10 +4,7 @@
     </h2>
 </x-slot>
 
-
-<div x-data="transactionModal()" x-init="getTargetName()"
-    class="p-3 max-w-md mx-auto flex flex-col items-center gap-4">
-
+<div x-data="transactionModal()" x-init="getTargetName()" class="p-3 max-w-md mx-auto flex flex-col items-center gap-4">
     <div class="inline-flex w-full shadow-sm gap-1" role="group">
         <template x-for="(value, key) in transaction_types" :key="key">
             <button type="button" @click="setTransaction_type(key)"
@@ -28,7 +25,7 @@
                 :class="transaction_type === key ?
                     'ring-gray-500 bg-gray-900 text-white dark:text-gray-900 dark:bg-indigo-700' :
                     ''">
-                <span x-text="value"></span>
+                <span x-text="value.label"></span>
             </button>
         </template>
     </div>
@@ -46,19 +43,14 @@
 
         <!-- Transaction Arrow SVG -->
         <template
-            x-if="transaction_type === 'expense' || transaction_type === 'loan_to' || transaction_type === 'transfer'">
-            <svg class="dark:text-indigo-700 w-12" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                stroke-width="1.5" stroke="currentColor">
+            x-if="transaction_type === 'expense' || transaction_type === 'loan_to' || transaction_type === 'transfer' || transaction_type === 'income' || transaction_type === 'loan_from'">
+            <svg :class="transaction_type === 'income' || transaction_type === 'loan_from' ? 'rotate-180' : ''"
+                class="dark:text-indigo-700 w-12 transition-all duration-150" xmlns="http://www.w3.org/2000/svg"
+                fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
             </svg>
         </template>
 
-        <template x-if="transaction_type === 'income' || transaction_type === 'loan_from'">
-            <svg class="dark:text-indigo-700 w-12 rotate-180" xmlns="http://www.w3.org/2000/svg" fill="none"
-                viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-            </svg>
-        </template>
 
         <button type="button" @click="toggleModals"
             class=" @error('form.target_id') border border-red-600 dark:border-red-400 @enderror w-full inline-flex justify-between items-center px-3 py-2 text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700 active:bg-gray-50 dark:active:bg-gray-700 transition ease-in-out duration-150">
@@ -74,38 +66,7 @@
         <x-input-error :messages="$errors->get('form.amount')" />
     </div>
 
-    {{-- <x-calculator /> --}}
-    <div class="w-full">
-        <div class="w-full h-52 flex">
-            <div
-                class=" flex-1 grid grid-cols-4 grid-rows-4 bg-white dark:text-gray-400 dark:bg-gray-700 rounded-xl overflow-clip dark:border-gray-900 divide-x divide-y dark:divide-gray-900 border">
-                <input class="border-t border-l dark:border-gray-900" type="button" value="7" @click="dis('7')">
-                <input type="button" value="8" @click="dis('8')">
-                <input type="button" value="9" @click="dis('9')">
-                <div
-                    class="flex flex-col flex-3 row-span-3 items-center justify-evenly bg-gray-900 text-white dark:bg-indigo-900 dark:text-gray-400 divide-y dark:divide-gray-900">
-                    <input class="w-full text-2xl" type="button" value="÷" @click="dis('/')">
-                    <input class="w-full text-2xl" type="button" value="×" @click="dis('*')">
-                    <input class="w-full text-2xl" type="button" value="-" @click="dis('-')">
-                    <input class="w-full text-2xl" type="button" value="+" @click="dis('+')">
-                </div>
-                <input type="button" value="4" @click="dis('4')">
-                <input type="button" value="5" @click="dis('5')">
-                <input type="button" value="6" @click="dis('6')">
-                <input type="button" value="1" @click="dis('1')">
-                <input type="button" value="2" @click="dis('2')">
-                <input type="button" value="3" @click="dis('3')">
-                <input type="button" value="." @click="dis('.')">
-                <input type="button" value="0" @click="dis('0')">
-                <input class=" text-2xl bg-gray-900 text-white dark:bg-indigo-900 dark:text-gray-400" type="button"
-                    value="c" @click="clr()" />
-                <input class="w-full h-full text-2xl bg-gray-900 text-white dark:bg-indigo-900 dark:text-gray-400"
-                    type="button" value="=" @click="solve()">
-
-            </div>
-        </div>
-
-    </div>
+    <x-calculator />
 
     <input wire:model="form.notes"
         class="border-none dark:bg-gray-700 dark:text-gray-300 dark:placeholder:text-gray-500 w-full rounded-lg"
@@ -122,118 +83,135 @@
         wire:click="save">Save</button>
 
     {{-- Modals --}}
-    <div x-cloak x-show="showWalletsModal"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
-        <div class="flex flex-col gap-3 base-bg base-text p-3 rounded-lg w-[90%] max-h-[70%] max-w-md shadow-lg"
-            @click.away="showWalletsModal = false">
-            <h3 class="text-lg font-semibold">Select Wallet</h3>
+    <x-my-modal modalName="showWalletsModal" closeAction="resetModals()" title="Select Wallet">
+        @foreach ($this->walletsList->where('id', '!=', $this->selectedWallet->id) as $wallet)
+            <div 
+                @click="handleSelection('App\\Models\\Wallet',{{ $wallet }})"
+                class="flex items-center justify-between cursor-pointer p-3 base-text secondary-bg">
+                <div>{{ $wallet->name }}</div>
+                @if ($wallet->totalRemaining !== 0)
+                    <div @class([
+                        'font-extrabold text-xs',
+                        'red-text' => $wallet->totalRemaining < 0,
+                        'green-text' => $wallet->totalRemaining > 0,
+                    ])>
+                        {{ number_format(abs($wallet->totalRemaining), $this->selectedCountry->decimal_points) }}
+                        <span class="uppercase font-thin">{{ $this->selectedCountry->currency }}</span>
+                    </div>
+                @endif
+            </div>
+        @endforeach
+    </x-my-modal>
 
-            <input class="w-full border-none rounded-lg secondary-bg base-text placeholder:light-text" placeholder="Search..."
-                type="text">
-        
-            <div class="rounded-lg secondary-bg base-text divide-y-2 gray-divider shadow-lg overflow-clip h-100 overflow-y-auto">
-                @foreach ($this->walletsList->where('id','!=',$this->selectedWallet->id) as $wallet)
-                    <div
-                    @click="handleSelection('App\\Models\\Wallet',{{ $wallet }})"
-                        class="flex items-center justify-between cursor-pointer p-3 base-text secondary-bg">
-                        <div>{{ $wallet->name }}</div>
-                        @if ($wallet->totalRemaining !== 0)
-                            <div @class([
-                                'font-extrabold text-xs',
-                                'red-text' => $wallet->totalRemaining < 0,
-                                'green-text' => $wallet->totalRemaining > 0,
-                            ])>
-                                {{ number_format(abs($wallet->totalRemaining), $this->selectedCountry->decimal_points) }}
-                                <span class=" uppercase  font-thin">{{ $this->selectedCountry->currency }}</span>
+    <x-my-modal modalName="showContactsModal" closeAction="resetModals()" title="Select Contact">
+        @foreach ($this->contactsList as $contact)
+            <div @click="handleSelection('App\\Models\\Contact',{{ $contact }})"
+                class="flex items-center justify-between cursor-pointer p-3 base-text secondary-bg">
+                <div>{{ $contact->name }}</div>
+                @if ($contact->totalRemaining !== 0)
+                    <div @class([
+                        'font-extrabold text-xs',
+                        'red-text' => $contact->totalRemaining < 0,
+                        'green-text' => $contact->totalRemaining > 0,
+                    ])>
+                        {{ number_format(abs($contact->totalRemaining), $this->selectedCountry->decimal_points) }}
+                        <span class="uppercase font-thin">{{ $this->selectedCountry->currency }}</span>
+                    </div>
+                @endif
+            </div>
+        @endforeach
+    </x-my-modal>
+
+    <x-my-modal modalName="showIncomesModal" closeAction="resetModals()" title="Select Income">
+        <x-slot name="mostUsedItems">
+            <div class="flex flex-wrap items-center justify-center gap-3">
+                @foreach ($this->mostUsedCategoriesList->where('type', 'income')->take(10) as $category)
+                <span @click="handleSelection('App\\Models\\Category',{{ $category }})" class="secondary-bg cursor-pointer light-text text-sm font-medium px-3 py-1 rounded">{{ $category->name }}</span>
+                @endforeach
+            </div>
+        </x-slot>
+        <div class="flex flex-col gap-3 base-bg">
+            @foreach ($this->categoriesList->where('type', 'income')->where('category_id', null) as $category)
+                <div class="rounded-lg secondary-bg base-text divide-y-2 gray-divider overflow-clip">
+                    <div @click="handleSelection('App\\Models\\Category',{{ $category }})" class=" p-3 cursor-pointer primary-bg white-text flex items-center justify-between">
+                        {{ $category->name }}
+                    </div>
+                    @if ($this->categoriesList->where('category_id', $category->id)->count() > 0)
+                        @foreach ($this->categoriesList->where('category_id', $category->id) as $sub_category)
+                            <div @click="handleSelection('App\\Models\\Category',{{ $sub_category }})" class=" cursor-pointer flex items-center justify-between p-3">
+                                {{ $sub_category->name }}
                             </div>
-                        @endif
-                    </div>
+                        @endforeach
+                    @endif
+                </div>
+            @endforeach
+        </div>
+    </x-my-modal>
+
+    <x-my-modal modalName="showExpensesModal" closeAction="resetModals()" title="Select Expense">
+        <x-slot name="mostUsedItems">
+            <div class="flex flex-wrap items-center justify-center gap-3">
+                @foreach ($this->mostUsedCategoriesList->where('type', 'expense')->take(10) as $category)
+                <span @click="handleSelection('App\\Models\\Category',{{ $category }})" class="secondary-bg cursor-pointer light-text text-sm font-medium px-3 py-1 rounded">{{ $category->name }}</span>
                 @endforeach
             </div>
-        </div>
-    </div>
-
-    <div x-cloak x-show="showContactsModal"
-        class="fixed inset-0 z-50  flex items-center justify-center bg-black bg-opacity-80">
-        <div class="flex flex-col gap-3 base-bg base-text p-3 rounded-lg w-[90%] max-h-[70%] max-w-md shadow-lg"
-            @click.away="showContactsModal = false">
-            <h3 class="text-lg font-semibold">Select Contact</h3>
-
-            <input class="w-full border-none rounded-lg secondary-bg base-text placeholder:light-text" placeholder="Search..."
-                type="text">
-        
-            <div class="rounded-lg secondary-bg base-text divide-y-2 gray-divider shadow-lg overflow-clip h-100 overflow-y-auto">
-                @foreach ($this->contactsList as $contact)
-                    <div
-                    @click="handleSelection('App\\Models\\Contact',{{ $contact }})"
-                        class="flex items-center justify-between cursor-pointer p-3 base-text secondary-bg">
-                        <div>{{ $contact->name }}</div>
-                        @if ($contact->available_amount !== 0)
-                            <div @class([
-                                'font-extrabold text-xs',
-                                'red-text' => $contact->available_amount < 0,
-                                'green-text' => $contact->available_amount > 0,
-                            ])>
-                                {{ number_format(abs($contact->available_amount), $this->selectedCountry->decimal_points) }}
-                                <span class=" uppercase  font-thin">{{ $this->selectedCountry->currency }}</span>
+        </x-slot>
+        <div class="flex flex-col gap-3 base-bg">
+            @foreach ($this->categoriesList->where('type', 'expense')->where('category_id', null) as $category)
+                <div class="rounded-lg secondary-bg base-text divide-y-2 gray-divider overflow-clip">
+                    <div @click="handleSelection('App\\Models\\Category',{{ $category }})" class=" p-3 cursor-pointer primary-bg white-text flex items-center justify-between">
+                        {{ $category->name }}
+                    </div>
+                    @if ($this->categoriesList->where('category_id', $category->id)->count() > 0)
+                        @foreach ($this->categoriesList->where('category_id', $category->id) as $sub_category)
+                            <div @click="handleSelection('App\\Models\\Category',{{ $sub_category }})" class=" cursor-pointer flex items-center justify-between p-3">
+                                {{ $sub_category->name }}
                             </div>
-                        @endif
-                    </div>
-                @endforeach
-            </div>
+                        @endforeach
+                    @endif
+                </div>
+            @endforeach
         </div>
-    </div>
+    </x-my-modal>
 
-    <div x-cloak x-show="showIncomesModal"
-        class="fixed inset-0 z-50  flex items-center justify-center bg-black bg-opacity-80">
-        <div class="flex flex-col gap-3 base-bg base-text p-3 rounded-lg w-[90%] max-h-[70%] max-w-md shadow-lg"
-            @click.away="showIncomesModal = false">
-            <h3 class="text-lg font-semibold">Select Income</h3>
-            <input class="w-full border-none rounded-lg secondary-bg base-text placeholder:light-text" placeholder="Search..."
-            type="text">
-            <div class="rounded-lg secondary-bg base-text divide-y-2 gray-divider shadow-lg overflow-clip h-100 overflow-y-auto">
-                @foreach ($this->incomesList as $income)
-                    <div class="flex items-center justify-between cursor-pointer p-3 base-text secondary-bg"
-                        @click="handleSelection('App\\Models\\Category',{{ $income }})">
-                        <div>{{ $income->name }}</div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </div>
-
-    <div x-cloak x-show="showExpensesModal"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
-        <div class="flex flex-col gap-3 base-bg base-text p-3 rounded-lg w-[90%] max-h-[70%] max-w-md shadow-lg"
-            @click.away="showExpensesModal = false">
-            <h3 class="text-lg font-semibold">Select expense</h3>
-            <input class="w-full border-none rounded-lg secondary-bg base-text placeholder:light-text" placeholder="Search..."
-            type="text">
-            <div class="rounded-lg secondary-bg base-text divide-y-2 gray-divider shadow-lg overflow-clip h-100 overflow-y-auto">
-                @foreach ($this->expensesList as $expense)
-                    <div class="flex items-center justify-between cursor-pointer p-3 base-text secondary-bg"
-                        @click="handleSelection('App\\Models\\Category',{{ $expense }})">
-                        <div>{{ $expense->name }}</div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.6.4/math.js"
-    integrity="sha512-BbVEDjbqdN3Eow8+empLMrJlxXRj5nEitiCAK5A1pUr66+jLVejo3PmjIaucRnjlB0P9R3rBUs3g5jXc8ti+fQ=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/10.6.4/math.min.js"
-    integrity="sha512-iphNRh6dPbeuPGIrQbCdbBF/qcqadKWLa35YPVfMZMHBSI6PLJh1om2xCTWhpVpmUyb4IvVS9iYnnYMkleVXLA=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
 <script>
+    function getTransactionTypes() {
+        return {
+            expense: {
+                label: 'Expense',
+                list: 'categoriesList',
+                modal: 'showExpensesModal'
+            },
+            income: {
+                label: 'Income',
+                list: 'categoriesList',
+                modal: 'showIncomesModal'
+            },
+            transfer: {
+                label: 'Transfer',
+                list: 'walletsList',
+                modal: 'showWalletsModal'
+            },
+            loan_to: {
+                label: 'Loan To',
+                list: 'contactsList',
+                modal: 'showContactsModal'
+            },
+            loan_from: {
+                label: 'Loan From',
+                list: 'contactsList',
+                modal: 'showContactsModal'
+            }
+        };
+    }
+
     function transactionModal() {
         return {
+            ...calculator(), // Spread the calculator methods into this object
 
-            expensesList: @json($this->expensesList),
-            incomesList: @json($this->incomesList),
+            categoriesList: @json($this->categoriesList),
             walletsList: @json($this->walletsList),
             contactsList: Array.isArray(@json($this->contactsList)) ? @json($this->contactsList) : Object.values(
                 @json($this->contactsList)),
@@ -249,80 +227,45 @@
             amount: @entangle('form.amount'),
 
             transaction_type: @entangle('form.type'),
-            transaction_types: {
-                expense: 'Expense',
-                income: 'Income',
-                transfer: 'Transfer',
-                loan_to: 'Loan To',
-                loan_from: 'Loan From',
-            }, // Define transaction types
+            transaction_types: getTransactionTypes(), // Refactored here
+
 
             handleSelection(model, selected) {
                 this.target_id = selected['id'];
                 this.target_name = selected['name'];
                 this.target_type = model;
-                this.showWalletsModal = false
-                this.showContactsModal = false
-                this.showExpensesModal = false
-                this.showIncomesModal = false
+                this.resetModals();
             },
 
             getTargetName() {
-                switch (this.transaction_type) {
-                    case 'expense':
-                        const expense = this.expensesList.find(item => item.id === this.target_id);
-                        if (expense) this.target_name = expense.name;
-                        break;
-                    case 'transfer':
-                        const wallet = this.walletsList.find(item => item.id === this.target_id);
-                        if (wallet) this.target_name = wallet.name;
-                        break;
-                    case 'income':
-                        const income = this.incomesList.find(item => item.id === this.target_id);
-                        if (income) this.target_name = income.name;
-                        break;
-                    case 'loan_from':
-                        const contact_from = this.contactsList.find(item => item.id === this.target_id);
-                        if (contact_from) this.target_name = contact_from.name;
-                        break;
-                    case 'loan_to':
-                        const contact_to = this.contactsList.find(item => item.id === this.target_id);
-                        if (contact_to) this.target_name = contact_to.name;
-                        break;
+                const listName = this.transaction_types[this.transaction_type]?.list;
+                const list = this[listName];
+
+                if (list) {
+                    const target = list.find(item => item.id === this.target_id);
+                    if (target) this.target_name = target.name;
                 }
             },
 
             setTransaction_type(type) {
-                this.transaction_type = type;
-                this.target_name = '---';
-                this.target_id = null;
+                if(this.transaction_type != type){
+                    this.transaction_type = type;
+                    this.target_name = '---';
+                    this.target_id = null;
+                }
             },
 
             toggleModals() {
-                this.showWalletsModal = this.transaction_type === 'transfer';
-                this.showContactsModal = this.transaction_type === 'loan_to' || this.transaction_type === 'loan_from';
-                this.showIncomesModal = this.transaction_type === 'income';
-                this.showExpensesModal = this.transaction_type === 'expense';
+                this.resetModals();
+                const modalName = this.transaction_types[this.transaction_type]?.modal;
+                if (modalName) this[modalName] = true;
             },
 
-            // Function that display value
-            dis(val) {
-                if (this.amount == 0) {
-                    this.amount = '';
-                }
-                this.amount += val
-            },
-
-            // Function that evaluates the digit and return result
-            solve() {
-                let x = this.amount
-                let y = math.evaluate(x)
-                this.amount = y
-            },
-
-            // Function that clear the display
-            clr() {
-                this.amount = 0
+            resetModals() {
+                this.showWalletsModal = false;
+                this.showContactsModal = false;
+                this.showIncomesModal = false;
+                this.showExpensesModal = false;
             },
         }
     }
