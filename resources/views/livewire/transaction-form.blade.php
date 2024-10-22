@@ -135,7 +135,7 @@
                 @foreach ($this->walletsList->where('id','!=',$this->selectedWallet->id) as $wallet)
                     <div
                     @click="handleSelection('App\\Models\\Wallet',{{ $wallet }})"
-                        class="flex items-center justify-between cursor-pointer p-3 bg-white text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                        class="flex items-center justify-between cursor-pointer p-3 base-text secondary-bg">
                         <div>{{ $wallet->name }}</div>
                         @if ($wallet->totalRemaining !== 0)
                             <div @class([
@@ -166,7 +166,7 @@
                 @foreach ($this->contactsList as $contact)
                     <div
                     @click="handleSelection('App\\Models\\Contact',{{ $contact }})"
-                        class="flex items-center justify-between cursor-pointer p-3 bg-white text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                        class="flex items-center justify-between cursor-pointer p-3 base-text secondary-bg">
                         <div>{{ $contact->name }}</div>
                         @if ($contact->available_amount !== 0)
                             <div @class([
@@ -186,28 +186,16 @@
 
     <div x-cloak x-show="showIncomesModal"
         class="fixed inset-0 z-50  flex items-center justify-center bg-black bg-opacity-80">
-        <div class="bg-white dark:bg-gray-900 dark:text-white p-4 rounded-lg w-[80%] max-w-md shadow-lg"
+        <div class="flex flex-col gap-3 base-bg base-text p-3 rounded-lg w-[90%] max-h-[70%] max-w-md shadow-lg"
             @click.away="showIncomesModal = false">
             <h3 class="text-lg font-semibold">Select Income</h3>
-            <div class="mt-4 h-96 overflow-y-auto">
+            <input class="w-full border-none rounded-lg secondary-bg base-text placeholder:light-text" placeholder="Search..."
+            type="text">
+            <div class="rounded-lg secondary-bg base-text divide-y-2 gray-divider shadow-lg overflow-clip h-100 overflow-y-auto">
                 @foreach ($this->incomesList as $income)
-                    <div class="w-full cursor-pointer p-3 bg-white dark:bg-gray-900"
+                    <div class="flex items-center justify-between cursor-pointer p-3 base-text secondary-bg"
                         @click="handleSelection('App\\Models\\Category',{{ $income }})">
                         <div>{{ $income->name }}</div>
-                        @if ($income->available_amount < 0)
-                            <div class="font-extrabold text-red-600 dark:text-red-400">
-                                {{ number_format(abs($income->available_amount), $this->selectedCountry->decimal_points) }}
-                                <span
-                                    class="uppercase text-xs font-thin">{{ $this->selectedCountry->currency }}</span>
-                            </div>
-                        @endif
-                        @if ($income->available_amount > 0)
-                            <div class="font-extrabold text-green-600 dark:text-green-400">
-                                {{ number_format($income->available_amount, $this->selectedCountry->decimal_points) }}
-                                <span
-                                    class="uppercase text-xs font-thin">{{ $this->selectedCountry->currency }}</span>
-                            </div>
-                        @endif
                     </div>
                 @endforeach
             </div>
@@ -216,28 +204,16 @@
 
     <div x-cloak x-show="showExpensesModal"
         class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80">
-        <div class="bg-white dark:bg-gray-900 dark:text-white p-4 rounded-lg w-[80%] max-w-md shadow-lg"
+        <div class="flex flex-col gap-3 base-bg base-text p-3 rounded-lg w-[90%] max-h-[70%] max-w-md shadow-lg"
             @click.away="showExpensesModal = false">
             <h3 class="text-lg font-semibold">Select expense</h3>
-            <div class="mt-4 h-96 overflow-y-auto">
+            <input class="w-full border-none rounded-lg secondary-bg base-text placeholder:light-text" placeholder="Search..."
+            type="text">
+            <div class="rounded-lg secondary-bg base-text divide-y-2 gray-divider shadow-lg overflow-clip h-100 overflow-y-auto">
                 @foreach ($this->expensesList as $expense)
-                    <div class="w-full cursor-pointer p-3 bg-white dark:bg-gray-900"
+                    <div class="flex items-center justify-between cursor-pointer p-3 base-text secondary-bg"
                         @click="handleSelection('App\\Models\\Category',{{ $expense }})">
                         <div>{{ $expense->name }}</div>
-                        @if ($expense->available_amount < 0)
-                            <div class="font-extrabold text-red-600 dark:text-red-400">
-                                {{ number_format(abs($expense->available_amount), $this->selectedCountry->decimal_points) }}
-                                <span
-                                    class="uppercase text-xs font-thin">{{ $this->selectedCountry->currency }}</span>
-                            </div>
-                        @endif
-                        @if ($expense->available_amount > 0)
-                            <div class="font-extrabold text-green-600 dark:text-green-400">
-                                {{ number_format($expense->available_amount, $this->selectedCountry->decimal_points) }}
-                                <span
-                                    class="uppercase text-xs font-thin">{{ $this->selectedCountry->currency }}</span>
-                            </div>
-                        @endif
                     </div>
                 @endforeach
             </div>
