@@ -125,7 +125,7 @@
     <x-my-modal modalName="showIncomesModal" closeAction="resetModals()" title="Select Income">
         <x-slot name="mostUsedItems">
             <div class="flex flex-wrap items-center justify-center gap-3">
-                @foreach ($this->mostUsedCategoriesList->where('type', 'income')->take(10) as $category)
+                @foreach ($this->categoriesList->where('type', 'income')->sortByDesc('transaction_count')->take(10) as $category)
                 <span @click="handleSelection('App\\Models\\Category',{{ $category }})" class="secondary-bg cursor-pointer light-text text-sm font-medium px-3 py-1 rounded">{{ $category->name }}</span>
                 @endforeach
             </div>
@@ -151,7 +151,7 @@
     <x-my-modal modalName="showExpensesModal" closeAction="resetModals()" title="Select Expense">
         <x-slot name="mostUsedItems">
             <div class="flex flex-wrap items-center justify-center gap-3">
-                @foreach ($this->mostUsedCategoriesList->where('type', 'expense')->take(10) as $category)
+                @foreach ($this->categoriesList->where('type', 'expense')->sortByDesc('transaction_count')->take(10) as $category)
                 <span @click="handleSelection('App\\Models\\Category',{{ $category }})" class="secondary-bg cursor-pointer light-text text-sm font-medium px-3 py-1 rounded">{{ $category->name }}</span>
                 @endforeach
             </div>

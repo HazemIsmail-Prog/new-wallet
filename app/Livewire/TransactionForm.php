@@ -27,30 +27,17 @@ class TransactionForm extends Component
     }
 
     #[Computed()]
-    public function categories()
-    {
-        return Category::query()
-            ->where('categories.country_id', $this->selectedCountry->id);
-    }
-
-    #[Computed()]
     public function categoriesList()
     {
-        return $this->categories()
-            ->get();
-    }
-
-    #[Computed()]
-    public function mostUsedCategoriesList()
-    {
-        return $this->categories()
+        return Category::query()
             ->leftJoin('transactions', function ($join) {
                 $join->on('categories.id', '=', 'transactions.target_id')
                     ->where('transactions.target_type', '=', Category::class);
             })
-            ->select('categories.id', 'categories.name', 'categories.type', 'categories.country_id', DB::raw('COUNT(transactions.id) as transaction_count'))
-            ->groupBy('categories.id', 'categories.name', 'categories.type', 'categories.country_id')
-            ->orderByDesc('transaction_count')->get();
+            ->where('categories.country_id', $this->selectedCountry->id)
+            ->select('categories.id', 'categories.name', 'categories.type', 'categories.country_id', 'categories.category_id', DB::raw('COUNT(transactions.id) as transaction_count'))
+            ->groupBy('categories.id', 'categories.name', 'categories.type', 'categories.country_id', 'categories.category_id')
+            ->get();
     }
 
     #[Computed()]
