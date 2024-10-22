@@ -5,7 +5,7 @@
 </x-slot>
 
 
-<div x-data="{ editMode: false }" class="max-w-md mx-auto p-6 flex flex-col gap-3">
+<div x-data="{ editMode: false }" class="max-w-md mx-auto p-3 flex flex-col gap-3">
     <div class="flex gap-3 text-gray-800 dark:text-gray-400">
         @if ($this->wallets)
             <div class="flex-1">

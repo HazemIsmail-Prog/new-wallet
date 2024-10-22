@@ -4,7 +4,7 @@
     </h2>
 </x-slot>
 
-<div class="p-6 text-gray-900 dark:text-gray-100">
+<div class="p-3 text-gray-900 dark:text-gray-100">
     <div class="text-start bg-white dark:bg-gray-800 text-green-600 dark:text-green-400 text-xs py-3 cursor-pointer"
         wire:click="$emitTo('category-form','showingModal',null)">
         New Category

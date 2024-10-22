@@ -4,3 +4,40 @@
 
 
 [x-cloak] { display: none !important; }
+
+
+@layer components {
+
+    /* backdround */
+    .base-bg {
+      @apply bg-gray-100 dark:bg-gray-900;
+    }
+    .primary-bg {
+      @apply bg-indigo-600 dark:bg-indigo-900;
+    }
+    .secondary-bg {
+      @apply bg-white dark:bg-gray-800;
+    }
+
+    /* text */
+    .base-text {
+      @apply text-gray-800 dark:text-gray-400;
+    }
+    .light-text {
+      @apply text-gray-500 dark:text-gray-400;
+    }
+    .white-text {
+      @apply text-white dark:text-gray-300;
+    }
+    .green-text {
+      @apply text-green-400 dark:text-green-400;
+    }
+    .red-text {
+      @apply text-red-500 dark:text-red-400;
+    }
+
+    /* divider */
+    .gray-divider {
+      @apply divide-gray-100 dark:divide-gray-900;
+    }
+  }

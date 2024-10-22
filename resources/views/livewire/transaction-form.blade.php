@@ -6,7 +6,7 @@
 
 
 <div x-data="transactionModal()" x-init="getTargetName()"
-    class="p-6  max-w-md mx-auto flex flex-col items-center gap-4">
+    class="p-3 max-w-md mx-auto flex flex-col items-center gap-4">
 
     <div class="inline-flex w-full shadow-sm gap-1" role="group">
         <template x-for="(value, key) in transaction_types" :key="key">
