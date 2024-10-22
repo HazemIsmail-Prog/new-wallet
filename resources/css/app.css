@@ -13,7 +13,7 @@
       @apply bg-gray-100 dark:bg-gray-900;
     }
     .primary-bg {
-      @apply bg-indigo-600 dark:bg-indigo-900;
+      @apply bg-gray-800 dark:bg-indigo-900;
     }
     .secondary-bg {
       @apply bg-white dark:bg-gray-800;

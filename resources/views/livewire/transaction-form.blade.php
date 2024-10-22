@@ -152,30 +152,33 @@
 
     <div x-cloak x-show="showContactsModal"
         class="fixed inset-0 z-50  flex items-center justify-center bg-black bg-opacity-50">
-        <div class="bg-white dark:bg-gray-900 dark:text-white p-4 rounded-lg w-[80%] max-w-md shadow-lg"
+        <div class="base-bg base-text p-3 rounded-lg w-[90%] h-[70%] max-w-md shadow-lg"
             @click.away="showContactsModal = false">
-            <h3 class="text-lg font-semibold">Select Contact</h3>
-            <div class="mt-4 h-96 overflow-y-auto">
-                @foreach ($this->contactsList as $contact)
-                    <div class="w-full cursor-pointer p-3 bg-white dark:bg-gray-900"
-                        @click="handleSelection('App\\Models\\Contact',{{ $contact }})">
-                        <div>{{ $contact->name }}</div>
-                        @if ($contact->available_amount < 0)
-                            <div class="font-extrabold text-sm text-red-600 dark:text-red-400">
-                                {{ number_format(abs($contact->available_amount), $this->selectedCountry->decimal_points) }}
-                                <span
-                                    class="uppercase text-xs font-thin">{{ $this->selectedCountry->currency }}</span>
-                            </div>
-                        @endif
-                        @if ($contact->available_amount > 0)
-                            <div class="font-extrabold text-sm text-green-600 dark:text-green-400">
-                                {{ number_format($contact->available_amount, $this->selectedCountry->decimal_points) }}
-                                <span
-                                    class="uppercase text-xs font-thin">{{ $this->selectedCountry->currency }}</span>
-                            </div>
-                        @endif
-                    </div>
-                @endforeach
+            <div class="flex flex-col gap-3 h-full">
+                <h3 class="text-lg font-semibold">Select Contact</h3>
+
+                <input class="w-full border-none rounded-lg secondary-bg base-text placeholder:light-text" placeholder="Search..."
+                    type="text">
+            
+                <div class="rounded-lg secondary-bg base-text divide-y-2 gray-divider shadow-lg overflow-clip h-100 overflow-y-auto">
+                    @foreach ($this->contactsList as $contact)
+                        <div
+                        @click="handleSelection('App\\Models\\Contact',{{ $contact }})"
+                            class="flex items-center justify-between cursor-pointer p-3 bg-white text-gray-500 dark:bg-gray-800 dark:text-gray-400">
+                            <div>{{ $contact->name }}</div>
+                            @if ($contact->available_amount !== 0)
+                                <div @class([
+                                    'font-extrabold text-xs',
+                                    'red-text' => $contact->available_amount < 0,
+                                    'green-text' => $contact->available_amount > 0,
+                                ])>
+                                    {{ number_format(abs($contact->available_amount), $this->selectedCountry->decimal_points) }}
+                                    <span class=" uppercase  font-thin">{{ $this->selectedCountry->currency }}</span>
+                                </div>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
             </div>
         </div>
     </div>
