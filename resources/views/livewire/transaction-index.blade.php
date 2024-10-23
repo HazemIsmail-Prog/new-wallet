@@ -161,7 +161,4 @@
         </div>
     @endforeach
     <div>{{ $this->transactions->links(data: ['scrollTo' => false]) }}</div>
-
-    {{-- <button wire:click="loadMore">Load more...</button> --}}
-
 </div>

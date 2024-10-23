@@ -9,7 +9,6 @@ use App\Models\Transaction;
 use App\Models\Wallet;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -18,8 +17,6 @@ use Livewire\WithPagination;
 class TransactionIndex extends Component
 {
     use WithPagination;
-
-    public $perPage = 5;
 
     #[Url()]
     public array $filters = [
@@ -34,10 +31,6 @@ class TransactionIndex extends Component
     public function updatedFilters()
     {
         $this->resetPage();
-    }
-
-    public function loadMore(){
-        $this->perPage += 5;
     }
 
     #[Computed()]
@@ -63,11 +56,11 @@ class TransactionIndex extends Component
     {
         $transactions = Transaction::query()
             ->where('country_id', $this->selectedCountry()->id)
-            ->with('target')
-            ->with('wallet')
+            ->with('target:id,name')
+            ->with('wallet:id,name')
             ->with(['target' => function ($query) {
                 $query->morphWith([
-                    Category::class => ['parent_category'],
+                    Category::class => ['parent_category:id,name'],
                 ]);
             }])
             ->tap(fn($query) => $this->applyFilters($query))
@@ -79,11 +72,11 @@ class TransactionIndex extends Component
 
         // Paginate grouped transactions (10 days per page)
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
-        $this->perPage = 5; // 5 days per page
+        $perPage = 5; // 5 days per page
         $days = $transactions->keys(); // Get the list of days
 
         // Slice the days to get the current page
-        $slicedDays = $days->slice(($currentPage - 1) * $this->perPage, $this->perPage);
+        $slicedDays = $days->slice(($currentPage - 1) * $perPage, $perPage);
 
         // Create a new collection for the paginated results
         $paginatedTransactions = $slicedDays->mapWithKeys(function ($day) use ($transactions) {
@@ -93,7 +86,7 @@ class TransactionIndex extends Component
         return new LengthAwarePaginator(
             $paginatedTransactions,
             $transactions->count(),
-            $this->perPage,
+            $perPage,
             $currentPage,
             ['path' => LengthAwarePaginator::resolveCurrentPath()]
         );
