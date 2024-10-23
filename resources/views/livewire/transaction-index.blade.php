@@ -15,10 +15,20 @@
             wire:model.live="filters.end_date">
     </div>
 
+    <div class="text-end  font-extrabold">
+        <div class="green-text">
+            {{ number_format($this->summary->totalIncomes / $this->selectedCountry->factor, $this->selectedCountry->decimal_points) }}
+            <span class=" uppercase text-xs font-thin">{{ $this->selectedCountry->currency }}</span>
+        </div>
+        <div class="red-text">
+            {{ number_format($this->summary->totalExpenses / $this->selectedCountry->factor, $this->selectedCountry->decimal_points) }}
+            <span class=" uppercase text-xs font-thin">{{ $this->selectedCountry->currency }}</span>
+        </div>
+    </div>
+
 
     @foreach ($this->transactions as $date => $transactions)
-        <div
-            class="rounded-lg secondary-bg base-text divide-y-2 gray-divider shadow-lg overflow-clip">
+        <div class="rounded-lg secondary-bg base-text divide-y-2 gray-divider shadow-lg overflow-clip">
             <div class=" p-3 primary-bg white-text flex items-center justify-between">
                 <div>
                     <div>{{ $transactions->first()->date->format('D') }}</div>

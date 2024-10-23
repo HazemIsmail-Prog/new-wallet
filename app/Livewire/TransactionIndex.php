@@ -3,12 +3,15 @@
 namespace App\Livewire;
 
 use App\Models\Category;
+use App\Models\Contact;
 use App\Models\Country;
 use App\Models\Transaction;
+use App\Models\Wallet;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Computed;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -16,13 +19,17 @@ class TransactionIndex extends Component
 {
     use WithPagination;
 
+    #[Url()]
     public array $filters = [
         'search' => '',
         'start_date' => '',
         'end_date' => '',
+        'category_id' => '',
+        'contact_id' => '',
+        'wallet_id' => '',
     ];
 
-    public function updateFilters()
+    public function updatedFilters()
     {
         $this->resetPage();
     }
@@ -31,6 +38,18 @@ class TransactionIndex extends Component
     public function selectedCountry()
     {
         return Country::find(Auth::user()->last_selected_country_id);
+    }
+
+    #[Computed()]
+    public function summary()
+    {
+        return Transaction::query()
+            ->tap(fn($query) => $this->applyFilters($query))
+            ->selectRaw("
+                SUM(CASE WHEN type IN ('expense', 'loan_to') THEN amount ELSE 0 END) as totalExpenses,
+                SUM(CASE WHEN type IN ('income', 'loan_from') THEN amount ELSE 0 END) as totalIncomes
+            ")
+            ->first();
     }
 
     #[Computed()]
@@ -45,15 +64,7 @@ class TransactionIndex extends Component
                     Category::class => ['parent_category'],
                 ]);
             }])
-            ->when($this->filters['search'], function (Builder $q) {
-                $q->where('notes', 'like', '%' . $this->filters['search'] . '%');
-            })
-            ->when($this->filters['start_date'], function (Builder $q) {
-                $q->whereDate('date', '>=', $this->filters['start_date']);
-            })
-            ->when($this->filters['end_date'], function (Builder $q) {
-                $q->whereDate('date', '<=', $this->filters['end_date']);
-            })
+            ->tap(fn($query) => $this->applyFilters($query))
             ->orderBy('date', 'desc')
             ->get()
             ->groupBy(function ($transaction) {
@@ -82,11 +93,40 @@ class TransactionIndex extends Component
         );
     }
 
+    public function applyFilters(Builder $query)
+    {
+        return $query
+            ->when($this->filters['search'], function (Builder $q) {
+                $q->where('notes', 'like', '%' . $this->filters['search'] . '%');
+            })
+            ->when($this->filters['start_date'], function (Builder $q) {
+                $q->whereDate('date', '>=', $this->filters['start_date']);
+            })
+            ->when($this->filters['end_date'], function (Builder $q) {
+                $q->whereDate('date', '<=', $this->filters['end_date']);
+            })
+            ->when($this->filters['category_id'], function (Builder $q) {
+                $q->where('target_type', Category::class);
+                $q->where('target_id', $this->filters['category_id']);
+            })
+            ->when($this->filters['contact_id'], function (Builder $q) {
+                $q->where('target_type', Contact::class);
+                $q->where('target_id', $this->filters['contact_id']);
+            })
+            ->when($this->filters['wallet_id'], function (Builder $q) {
+                $q->where('wallet_id', $this->filters['wallet_id']);
+                $q->orWhere(function (Builder $q) {
+                    $q->where('target_type', Wallet::class);
+                    $q->where('target_id', $this->filters['wallet_id']);
+                });
+            })
+        ;
+    }
+
     public function delete(Transaction $transaction)
     {
         $transaction->delete();
     }
-
 
     public function render()
     {
