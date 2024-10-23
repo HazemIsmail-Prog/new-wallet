@@ -23,7 +23,7 @@ class CategoryIndex extends Component
     #[Computed()]
     public function selectedCountry()
     {
-        return Country::find(Auth::user()->last_selected_country_id);
+        return session('activeCountry');
     }
 
     #[Computed()]

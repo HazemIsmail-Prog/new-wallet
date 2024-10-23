@@ -19,6 +19,8 @@ class TransactionIndex extends Component
 {
     use WithPagination;
 
+    public $perPage = 5;
+
     #[Url()]
     public array $filters = [
         'search' => '',
@@ -34,10 +36,14 @@ class TransactionIndex extends Component
         $this->resetPage();
     }
 
+    public function loadMore(){
+        $this->perPage += 5;
+    }
+
     #[Computed()]
     public function selectedCountry()
     {
-        return Country::find(Auth::user()->last_selected_country_id);
+        return session('activeCountry');
     }
 
     #[Computed()]
@@ -73,11 +79,11 @@ class TransactionIndex extends Component
 
         // Paginate grouped transactions (10 days per page)
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
-        $perPage = 5; // 5 days per page
+        $this->perPage = 5; // 5 days per page
         $days = $transactions->keys(); // Get the list of days
 
         // Slice the days to get the current page
-        $slicedDays = $days->slice(($currentPage - 1) * $perPage, $perPage);
+        $slicedDays = $days->slice(($currentPage - 1) * $this->perPage, $this->perPage);
 
         // Create a new collection for the paginated results
         $paginatedTransactions = $slicedDays->mapWithKeys(function ($day) use ($transactions) {
@@ -87,7 +93,7 @@ class TransactionIndex extends Component
         return new LengthAwarePaginator(
             $paginatedTransactions,
             $transactions->count(),
-            $perPage,
+            $this->perPage,
             $currentPage,
             ['path' => LengthAwarePaginator::resolveCurrentPath()]
         );

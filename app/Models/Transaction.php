@@ -16,7 +16,8 @@ class Transaction extends Model
         'time' => 'datetime',
     ];
 
-    public function wallet() : BelongsTo {
+    public function wallet(): BelongsTo
+    {
         return $this->belongsTo(Wallet::class);
     }
 
@@ -27,11 +28,19 @@ class Transaction extends Model
 
     protected function amount(): Attribute
     {
-        $selectedCountry = Country::find(Auth::user()->last_selected_country_id);
+        // Retrieve the country from the session
+        $selectedCountry = session('activeCountry');
+
+        // Check if selectedCountry is available and has the 'factor' property
+        if (!$selectedCountry) {
+            // Handle the case where the country is not set in the session
+            // For example, you can return a default value or throw an exception
+            throw new \Exception('No country selected in session.');
+        }
 
         return Attribute::make(
-            get: fn ($value) => $value / $selectedCountry->factor,
-            set: fn ($value) => $value * $selectedCountry->factor,
+            get: fn($value) => $value / $selectedCountry->factor,
+            set: fn($value) => $value * $selectedCountry->factor,
         );
     }
 }

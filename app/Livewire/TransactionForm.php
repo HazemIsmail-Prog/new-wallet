@@ -23,7 +23,7 @@ class TransactionForm extends Component
     #[Computed()]
     public function selectedCountry()
     {
-        return Country::find(Auth::user()->last_selected_country_id);
+        return session('activeCountry');
     }
 
     #[Computed()]
@@ -44,6 +44,8 @@ class TransactionForm extends Component
     public function walletsList()
     {
         $wallets = Wallet::query()
+
+            ->select('id', 'name', 'country_id','init_amount')
 
             ->where('country_id', $this->selectedCountry->id)
 
@@ -95,7 +97,7 @@ class TransactionForm extends Component
     public function mount(Transaction $transaction, Wallet $wallet)
     {
         if (!$transaction->id) {
-            $this->selectedWallet = $this->walletsList()->where('id', $wallet->id)->first();
+            $this->selectedWallet = $this->walletsList->where('id', $wallet->id)->first();
             $this->form->wallet_id = $wallet->id;
             $this->form->date = date('Y-m-d');
             $this->form->time = now()->format('H:i');
