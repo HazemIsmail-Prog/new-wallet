@@ -36,28 +36,49 @@
                     <div>
                         <div>{{ $category->name }}</div>
                         @if ($this->categories->where('category_id', $category->id)->count() > 0)
-                            <div @class([
-                                'font-extrabold text-xs',
-                                'red-text' => $filters['type'] == 'expense',
-                                'green-text' => $filters['type'] == 'income',
-                            ])>
+                            <a wire:navigate
+                                href="{{ route('transaction.index', [
+                                    'filters[category_id]' => [$category->id],
+                                    'filters[start_date]' => $filters['start_date'],
+                                    'filters[end_date]' => $filters['end_date'],
+                                ]) }}"
+                                @class([
+                                    'font-extrabold text-xs block',
+                                    'red-text' => $filters['type'] == 'expense',
+                                    'green-text' => $filters['type'] == 'income',
+                                ])>
                                 {{ $category->formatted_total }}
                                 <span class=" uppercase text-xs font-thin">{{ $this->selectedCountry->currency }}</span>
-                            </div>
-                            <div @class([
-                                'font-extrabold text-xs',
-                                'red-text' => $filters['type'] == 'expense',
-                                'green-text' => $filters['type'] == 'income',
-                            ])> {{ $category->formatted_sub_categories_total }}
+                            </a>
+                            <a wire:navigate
+                                href="{{ route('transaction.index', [
+                                    'filters[category_id]' => $this->categories->where('category_id', $category->id)->pluck('id')->toArray(),
+                                    'filters[start_date]' => $filters['start_date'],
+                                    'filters[end_date]' => $filters['end_date'],
+                                ]) }}"
+                                @class([
+                                    'font-extrabold text-xs block',
+                                    'red-text' => $filters['type'] == 'expense',
+                                    'green-text' => $filters['type'] == 'income',
+                                ])> {{ $category->formatted_sub_categories_total }}
                                 <span class=" uppercase text-xs font-thin">{{ $this->selectedCountry->currency }}</span>
-                            </div>
+                            </a>
                         @endif
                     </div>
-                    <div @class([
-                        'font-extrabold',
-                        'red-text' => $filters['type'] == 'expense',
-                        'green-text' => $filters['type'] == 'income',
-                    ])> {{ $category->formatted_grand_total }}
+                    <div wire:navigate
+                        href="{{ route('transaction.index', [
+                            'filters[category_id]' => array_merge(
+                                [$category->id],
+                                $this->categories->where('category_id', $category->id)->pluck('id')->toArray(),
+                            ),
+                            'filters[start_date]' => $filters['start_date'],
+                            'filters[end_date]' => $filters['end_date'],
+                        ]) }}"
+                        @class([
+                            'font-extrabold cursor-pointer',
+                            'red-text' => $filters['type'] == 'expense',
+                            'green-text' => $filters['type'] == 'income',
+                        ])> {{ $category->formatted_grand_total }}
                         <span class=" uppercase text-xs font-thin">{{ $this->selectedCountry->currency }}</span>
                     </div>
                 </div>
@@ -70,7 +91,7 @@
                                 <div>{{ $sub_category->name }}</div>
                                 <a wire:navigate
                                     href="{{ route('transaction.index', [
-                                        'filters[category_id]' => $sub_category->id,
+                                        'filters[category_id]' => [$sub_category->id],
                                         'filters[start_date]' => $filters['start_date'],
                                         'filters[end_date]' => $filters['end_date'],
                                     ]) }}"

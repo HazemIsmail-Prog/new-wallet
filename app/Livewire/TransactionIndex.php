@@ -24,7 +24,7 @@ class TransactionIndex extends Component
         'search' => '',
         'start_date' => '',
         'end_date' => '',
-        'category_id' => '',
+        'category_id' => [],
         'contact_id' => '',
         'wallet_id' => '',
     ];
@@ -107,7 +107,7 @@ class TransactionIndex extends Component
             })
             ->when($this->filters['category_id'], function (Builder $q) {
                 $q->where('target_type', Category::class);
-                $q->where('target_id', $this->filters['category_id']);
+                $q->whereIn('target_id', $this->filters['category_id']);
             })
             ->when($this->filters['contact_id'], function (Builder $q) {
                 $q->where('target_type', Contact::class);
