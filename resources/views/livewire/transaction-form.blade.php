@@ -58,10 +58,13 @@
         </button>
     </div>
 
-    <div class="flex flex-col items-center">
+    <div class="flex flex-col items-center w-full relative">
         <h1 class="mt-6 font-extrabold text-2xl text-gray-800 dark:text-gray-400" x-text="amount">
             <span class="font-light text-sm uppercase">{{ $this->selectedCountry->currency }}</span>
         </h1>
+
+        <input class=" absolute w-12 right-6 bottom-0 text-3xl " type="button" value="⌫" @click="backspace()">
+
 
         <x-input-error :messages="$errors->get('form.amount')" />
     </div>

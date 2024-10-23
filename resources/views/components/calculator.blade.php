@@ -55,6 +55,14 @@
             clr() {
                 this.amount = 0;
             },
+
+            backspace() {
+                if (this.amount != 0)
+                    this.amount = this.amount.slice(0, -1);
+
+                if (!this.amount)
+                    this.clr()
+            },
         }
     }
 </script>
