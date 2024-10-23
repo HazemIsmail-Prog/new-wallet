@@ -29,6 +29,9 @@
     .white-text {
       @apply text-white dark:text-gray-300;
     }
+    .primary-text {
+      @apply text-gray-800 dark:text-indigo-900;
+    }
     .green-text {
       @apply text-green-400 dark:text-green-400;
     }
