@@ -31,7 +31,7 @@
     </div>
 
     <div class="w-full flex justify-between items-center gap-3">
-        <button wire:ignore type="button"
+        <button wire:ignore type="button" @click="getCurrentRemainingAmount({{$selectedWallet}})"
             class="w-full px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700 active:bg-gray-50 dark:active:bg-gray-700 transition ease-in-out duration-150">
             <div>
                 {{ $selectedWallet->name }}
@@ -237,6 +237,10 @@
                 this.resetModals();
             },
 
+            getCurrentRemainingAmount(wallet){
+                this.amount = wallet.totalRemaining
+            },
+
             getTargetName() {
                 const listName = this.transaction_types[this.transaction_type]?.list;
                 const list = this[listName];
@@ -253,6 +257,7 @@
                     this.target_name = '---';
                     this.target_id = null;
                 }
+                this.toggleModals();
             },
 
             toggleModals() {
