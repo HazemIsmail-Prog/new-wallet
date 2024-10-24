@@ -16,7 +16,7 @@ Route::middleware([
 ])->group(function () {
 
     Route::get('/', function () {
-        return view('dashboard');
+        return redirect()->route('wallet.index');
     })->name('dashboard');
 
     Route::get('/countries', CountryIndex::class)->name('country.index');

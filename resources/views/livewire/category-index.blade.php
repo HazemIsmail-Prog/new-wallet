@@ -1,5 +1,5 @@
 <x-slot name="header">
-    <h2 class="font-semibold text-xl white-text leading-tight">
+    <h2 class="font-semibold text-xl base-text leading-tight">
         {{ __('Categories') }}
     </h2>
 </x-slot>

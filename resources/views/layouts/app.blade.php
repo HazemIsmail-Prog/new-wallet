@@ -19,7 +19,7 @@
 
 <body class="font-sans antialiased">
     <div class="min-h-dvh h-dvh max-w-md mx-auto base-bg flex flex-col">
-        {{-- <livewire:layout.navigation /> --}}
+        <livewire:layout.navigation />
 
         <!-- Page Heading -->
         @if (isset($header))
