@@ -35,7 +35,6 @@ class CountryIndex extends Component
         $authUser = User::find(Auth::id());
         $authUser->last_selected_country_id = $countryId;
         $authUser->save();
-        session(['activeCountry' => Country::find($countryId)]);
         return $this->redirect(route('wallet.index'), navigate: true);
 
     }
