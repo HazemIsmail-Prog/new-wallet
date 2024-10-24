@@ -23,7 +23,6 @@ class ContactIndex extends Component
 
         // Retrieve contacts with totalIncoming and totalOutgoing sums
         $contacts = Contact::query()
-            ->where('country_id', $this->selectedCountry->id)
             ->withSum('outgoingTransactions as totalOutgoing', DB::raw('amount'))
             ->withSum('incomingTransactions as totalIncoming', DB::raw('amount'))
             ->get();

@@ -34,7 +34,7 @@ class TransactionForm extends Component
                 $join->on('categories.id', '=', 'transactions.target_id')
                     ->where('transactions.target_type', '=', Category::class);
             })
-            ->where('categories.country_id', $this->selectedCountry->id)
+            // ->where('categories.country_id', $this->selectedCountry->id)
             ->select('categories.id', 'categories.name', 'categories.type', 'categories.country_id', 'categories.category_id', DB::raw('COUNT(transactions.id) as transaction_count'))
             ->groupBy('categories.id', 'categories.name', 'categories.type', 'categories.country_id', 'categories.category_id')
             ->get();
@@ -46,8 +46,6 @@ class TransactionForm extends Component
         $wallets = Wallet::query()
 
             ->select('id', 'name', 'country_id','init_amount')
-
-            ->where('country_id', $this->selectedCountry->id)
 
             ->withSum(['transactions as walletOutgoings' => function (Builder $q) {
                 $q->whereIn('type', ['expense', 'loan_to', 'transfer']);
@@ -80,7 +78,6 @@ class TransactionForm extends Component
     {
         // Retrieve contacts with totalIncoming and totalOutgoing sums
         $contacts = Contact::query()
-            ->where('country_id', $this->selectedCountry->id)
             ->withSum('outgoingTransactions as totalOutgoing', DB::raw('amount'))
             ->withSum('incomingTransactions as totalIncoming', DB::raw('amount'))
             ->get();

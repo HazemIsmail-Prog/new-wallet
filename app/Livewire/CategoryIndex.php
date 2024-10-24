@@ -3,9 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Category;
-use App\Models\Country;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
@@ -26,19 +24,29 @@ class CategoryIndex extends Component
         return session('activeCountry');
     }
 
+    
+    public function applyFilters(Builder $query)
+    {
+        return $query
+            ->when($this->filters['search'], function (Builder $q) {
+                $q->where('notes', 'like', '%' . $this->filters['search'] . '%');
+            })
+            ->when($this->filters['start_date'], function (Builder $q) {
+                $q->whereDate('date', '>=', $this->filters['start_date']);
+            })
+            ->when($this->filters['end_date'], function (Builder $q) {
+                $q->whereDate('date', '<=', $this->filters['end_date']);
+            })
+        ;
+    }
+
     #[Computed()]
     public function categories()
     {
         $categories = Category::query()
-            ->where('country_id', $this->selectedCountry->id)
             ->where('type', $this->filters['type'])
             ->withSum(['transactions as total' => function (Builder $q) {
-                $q->when($this->filters['start_date'], function (Builder $q) {
-                    $q->whereDate('date', '>=', $this->filters['start_date']);
-                });
-                $q->when($this->filters['end_date'], function (Builder $q) {
-                    $q->whereDate('date', '<=', $this->filters['end_date']);
-                });
+                $q->tap(fn($query) => $this->applyFilters($query));
             }], DB::raw('amount / ' . $this->selectedCountry->factor))
             ->get();
 

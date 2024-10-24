@@ -23,8 +23,6 @@ class WalletIndex extends Component
     {
         $wallets = Wallet::query()
 
-            ->where('country_id', $this->selectedCountry->id)
-
             ->withSum(['transactions as walletOutgoings' => function (Builder $q) {
                 $q->whereIn('type', ['expense', 'loan_to', 'transfer']);
             }], DB::raw('amount'))

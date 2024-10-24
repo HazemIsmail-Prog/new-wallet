@@ -55,7 +55,6 @@ class TransactionIndex extends Component
     public function transactions()
     {
         $transactions = Transaction::query()
-            ->where('country_id', $this->selectedCountry()->id)
             ->with('target:id,name')
             ->with('wallet:id,name')
             ->with(['target' => function ($query) {
