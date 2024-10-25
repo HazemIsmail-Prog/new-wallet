@@ -17,12 +17,10 @@
         <input type="button" value="1" @click="dis('1')">
         <input type="button" value="2" @click="dis('2')">
         <input type="button" value="3" @click="dis('3')">
-        <input type="button" value="." @click="dis('.')">
+        <input class="text-2xl primary-bg white-text" type="button" value="c" @click="clr()">
         <input type="button" value="0" @click="dis('0')">
-        <input class="text-2xl primary-bg white-text" type="button"
-            value="c" @click="clr()">
-        <input class="w-full h-full text-2xl primary-bg white-text"
-            type="button" value="=" @click="solve()">
+        <input type="button" value="." @click="dis('.')">
+        <input class="w-full h-full text-2xl primary-bg white-text" type="button" value="=" @click="solve()">
     </div>
 </div>
 
