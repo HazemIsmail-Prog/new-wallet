@@ -33,12 +33,6 @@ class TransactionIndex extends Component
     }
 
     #[Computed()]
-    public function selectedCountry()
-    {
-        return session('activeCountry');
-    }
-
-    #[Computed()]
     public function summary()
     {
         $summary = Transaction::query()
@@ -49,8 +43,8 @@ class TransactionIndex extends Component
             ")
             ->first();
 
-        $summary->formattedTotalExpenses = number_format($summary->totalExpenses / $this->selectedCountry->factor, $this->selectedCountry->decimal_points);
-        $summary->formattedTotalIncomes = number_format($summary->totalIncomes / $this->selectedCountry->factor, $this->selectedCountry->decimal_points);
+        $summary->formattedTotalExpenses = number_format($summary->totalExpenses / session('activeCountry')->factor, session('activeCountry')->decimal_points);
+        $summary->formattedTotalIncomes = number_format($summary->totalIncomes / session('activeCountry')->factor, session('activeCountry')->decimal_points);
 
         return $summary;
     }

@@ -22,6 +22,16 @@ class CategoryIndex extends Component
         return GetData::categories($this->filters);
     }
 
+    #[Computed()]
+    public function parentCategoriesList() {
+        return $this->categories->where('category_id', null);
+    }
+
+    #[Computed()]
+    public function subCategoriesList($categoryId) {
+        return $this->categories->where('category_id', $categoryId);
+    }
+
     public function render()
     {
         return view('livewire.category-index');

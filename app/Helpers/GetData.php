@@ -4,8 +4,10 @@ namespace App\Helpers;
 
 use App\Models\Category;
 use App\Models\Contact;
+use App\Models\Country;
 use App\Models\Wallet;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class GetData
@@ -121,5 +123,22 @@ class GetData
             ->select('categories.id', 'categories.name', 'categories.type', 'categories.country_id', 'categories.category_id', DB::raw('COUNT(transactions.id) as transaction_count'))
             ->groupBy('categories.id', 'categories.name', 'categories.type', 'categories.country_id', 'categories.category_id')
             ->get();
+    }
+
+    public static function countries()
+    {
+        $countries = Country::query()
+            ->where('user_id', Auth::id())
+            ->withSum('outgoingTransactions as totalOutgoing', 'amount')
+            ->withSum('incomingTransactions as totalIncoming', 'amount')
+            ->withSum('wallets as walletsInitAmount', 'init_amount')
+            ->get();
+
+        // Add totalRemaining to each contact and sort by absolute value of totalRemaining
+        return $countries->map(function ($country) {
+            $country->totalRemaining = ($country->walletsInitAmount + $country->totalIncoming - $country->totalOutgoing) / $country->factor;
+            $country->formattedTotalRemaining = number_format(abs($country->totalRemaining), $country->decimal_points);
+            return $country;
+        });
     }
 }
