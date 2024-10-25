@@ -68,7 +68,6 @@ class TransactionIndex extends Component
             }])
             ->tap(fn($query) => $this->applyFilters($query))
             ->orderBy('date', 'desc')
-            ->limit(10)
             ->get()
             ->groupBy(function ($transaction) {
                 return $transaction->date->format('Y-m-d');
