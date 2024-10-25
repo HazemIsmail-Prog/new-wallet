@@ -11,27 +11,27 @@ class Country extends Model
 
     public function wallets(): HasMany
     {
-        return $this->hasMany(Wallet::class);
+        return $this->hasMany(Wallet::class)->withoutGlobalScopes();
     }
 
     public function categories(): HasMany
     {
-        return $this->hasMany(Category::class);
+        return $this->hasMany(Category::class)->withoutGlobalScopes();
     }
 
     public function contacts(): HasMany
     {
-        return $this->hasMany(Contact::class);
+        return $this->hasMany(Contact::class)->withoutGlobalScopes();
     }
 
     public function outgoingTransactions(): HasMany
     {
-        return $this->hasMany(Transaction::class)->whereIn('type',['expense', 'loan_to']);
+        return $this->hasMany(Transaction::class)->withoutGlobalScopes()->whereIn('type',['expense', 'loan_to']);
     }
 
     public function incomingTransactions(): HasMany
     {
-        return $this->hasMany(Transaction::class)->whereIn('type',['income', 'loan_from']);
+        return $this->hasMany(Transaction::class)->withoutGlobalScopes()->whereIn('type',['income', 'loan_from']);
     }
 
     public function getFactorAttribute()

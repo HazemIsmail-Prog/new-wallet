@@ -4,9 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Country;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
@@ -36,7 +34,6 @@ class CountryIndex extends Component
         $authUser->last_selected_country_id = $countryId;
         $authUser->save();
         return $this->redirect(route('wallet.index'), navigate: true);
-
     }
 
     public function render()
