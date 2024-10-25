@@ -5,18 +5,15 @@ namespace App\Livewire;
 use App\Livewire\Forms\TransactionForm as FormsTransactionForm;
 use App\Models\Category;
 use App\Models\Contact;
-use App\Models\Country;
 use App\Models\Transaction;
 use App\Models\Wallet;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Component;
 
 class TransactionForm extends Component
 {
-
     public FormsTransactionForm $form;
     public $selectedWallet;
 
@@ -41,11 +38,26 @@ class TransactionForm extends Component
     }
 
     #[Computed()]
+    public function mostUsedCategoriesList($type) {
+        return $this->categoriesList->where('type', $type)->sortByDesc('transaction_count')->take(10);
+    }
+ 
+    #[Computed()]
+    public function parentCategoriesList($type) {
+        return $this->categoriesList->where('type', $type)->where('category_id', null);
+    }
+
+    #[Computed()]
+    public function subCategoriesList($categoryId) {
+        return $this->categoriesList->where('category_id', $categoryId);
+    }
+
+    #[Computed()]
     public function walletsList()
     {
         $wallets = Wallet::query()
 
-            ->select('id', 'name', 'country_id','init_amount')
+            ->select('id', 'name', 'country_id','init_amount','color')
 
             ->withSum(['transactions as walletOutgoings' => function (Builder $q) {
                 $q->whereIn('type', ['expense', 'loan_to', 'transfer']);
@@ -69,8 +81,15 @@ class TransactionForm extends Component
                     + $wallet->incomingTransfers
                     - $wallet->walletOutgoings
                 ) / $this->selectedCountry->factor;
+
+                $wallet->formattedTotalRemaining = number_format(abs($wallet->totalRemaining), $this->selectedCountry->decimal_points);
             return $wallet;
         });
+    }
+
+    #[Computed()]
+    public function availableWalletsList()  {
+        return $this->walletsList->where('id', '!=', $this->selectedWallet->id);
     }
 
     #[Computed()]
@@ -85,6 +104,7 @@ class TransactionForm extends Component
         // Add totalRemaining to each contact and sort by absolute value of totalRemaining
         return $contacts->map(function ($contact) {
             $contact->totalRemaining = ($contact->totalIncoming - $contact->totalOutgoing) / $this->selectedCountry->factor;
+            $contact->formattedTotalRemaining = number_format(abs($contact->totalRemaining), $this->selectedCountry->decimal_points);
             return $contact;
         })->sortByDesc(function ($contact) {
             return abs($contact->totalRemaining);

@@ -21,10 +21,10 @@ class CountryIndex extends Component
             ->withSum('wallets as walletsInitAmount', 'init_amount')
             ->get();
 
-
         // Add totalRemaining to each contact and sort by absolute value of totalRemaining
         return $countries->map(function ($country) {
             $country->totalRemaining = ($country->walletsInitAmount + $country->totalIncoming - $country->totalOutgoing) / $country->factor;
+            $country->formattedTotalRemaining = number_format(abs($country->totalRemaining), $country->decimal_points);
             return $country;
         });
     }

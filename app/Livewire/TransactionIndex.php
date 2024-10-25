@@ -4,7 +4,6 @@ namespace App\Livewire;
 
 use App\Models\Category;
 use App\Models\Contact;
-use App\Models\Country;
 use App\Models\Transaction;
 use App\Models\Wallet;
 use Illuminate\Database\Eloquent\Builder;
@@ -42,13 +41,18 @@ class TransactionIndex extends Component
     #[Computed()]
     public function summary()
     {
-        return Transaction::query()
+        $summary = Transaction::query()
             ->tap(fn($query) => $this->applyFilters($query))
             ->selectRaw("
                 SUM(CASE WHEN type IN ('expense', 'loan_to') THEN amount ELSE 0 END) as totalExpenses,
                 SUM(CASE WHEN type IN ('income', 'loan_from') THEN amount ELSE 0 END) as totalIncomes
             ")
             ->first();
+
+        $summary->formattedTotalExpenses = number_format($summary->totalExpenses / $this->selectedCountry->factor, $this->selectedCountry->decimal_points);
+        $summary->formattedTotalIncomes = number_format($summary->totalIncomes / $this->selectedCountry->factor, $this->selectedCountry->decimal_points);
+
+        return $summary;
     }
 
     #[Computed()]
@@ -64,10 +68,20 @@ class TransactionIndex extends Component
             }])
             ->tap(fn($query) => $this->applyFilters($query))
             ->orderBy('date', 'desc')
+            ->limit(10)
             ->get()
             ->groupBy(function ($transaction) {
                 return $transaction->date->format('Y-m-d');
             });
+
+        $transactions->map(function ($group) {
+            $group->totalIncomes = $group->whereIn('type', ['income', 'loan_from'])->sum('amount');
+            $group->totalExpenses = $group->whereIn('type', ['expense', 'loan_to'])->sum('amount');
+            $group->formattedTotalExpenses = number_format($group->totalExpenses,session('activeCountry')->decimal_points);
+            $group->formattedTotalIncomes = number_format($group->totalIncomes,session('activeCountry')->decimal_points);
+            return $group;
+        });
+
 
         // Paginate grouped transactions (10 days per page)
         $currentPage = LengthAwarePaginator::resolveCurrentPage();

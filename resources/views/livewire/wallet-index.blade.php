@@ -12,7 +12,7 @@
                 <h1 class=" font-extralight text-sm">Total Available</h1>
                 <h1 class="text-start text-3xl font-extrabold">
                     {{ number_format($this->wallets->sum('totalRemaining'), $this->selectedCountry->decimal_points) }}
-                    <span class=" font-light text-xs uppercase">{{ $this->selectedCountry->currency }}</span>
+                    <x-active-currency />
                 </h1>
             </div>
         @endif
@@ -51,8 +51,8 @@
                 <div class="font-normal text-xs">
                     <div class=" text-right">Available Amount</div>
                     <div class=" text-2xl font-extrabold">
-                        {{ number_format($wallet->totalRemaining, $this->selectedCountry->decimal_points) }} <span
-                            class="font-normal text-xs uppercase">{{ $this->selectedCountry->currency }}</span></div>
+                        {{ number_format($wallet->totalRemaining, $this->selectedCountry->decimal_points) }}
+                        <x-active-currency /></div>
                 </div>
             </a>
             {{-- <template x-if="editMode"> --}}

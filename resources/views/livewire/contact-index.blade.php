@@ -4,11 +4,9 @@
     </h2>
 </x-slot>
 
-
 <div class="p-3 flex flex-col gap-3">
 
-    <input class="w-full border-none rounded-lg secondary-bg base-text placeholder:light-text" placeholder="Search..."
-        type="text" wire:model.live="filters.search">
+    <x-text-input placeholder="Search..." type="text" wire:model.live="filters.search" />
 
     <div class="rounded-lg secondary-bg base-text divide-y-2 gray-divider shadow-lg overflow-clip">
 
@@ -22,11 +20,12 @@
                             'red-text' => $contact->totalRemaining < 0,
                             'green-text' => $contact->totalRemaining > 0,
                         ])>
-                        {{ number_format(abs($contact->totalRemaining), $this->selectedCountry->decimal_points) }}
-                        <span class=" uppercase text-xs font-thin">{{ $this->selectedCountry->currency }}</span>
-                    </a>
+                        {{ $contact->formattedTotalRemaining }}
+                        <x-active-currency /> </a>
                 @endif
             </div>
         @endforeach
+
     </div>
+
 </div>

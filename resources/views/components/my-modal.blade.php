@@ -20,7 +20,7 @@
         </div>
 
 
-        <div class="rounded-lg secondary-bg base-text divide-y-2 gray-divider overflow-clip h-100 overflow-y-auto">
+        <div class="rounded-lg secondary-bg base-text divide-y-2 gray-divider overflow-clip h-100 overflow-y-auto no-scrollbar">
             {{ $slot }}
         </div>
     </div>

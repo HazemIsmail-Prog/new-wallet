@@ -2,45 +2,56 @@
 @tailwind components;
 @tailwind utilities;
 
+[x-cloak] {
+    display: none !important;
+}
 
-[x-cloak] { display: none !important; }
-
+@layer utilities {
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+    }
+}
 
 @layer components {
-
     /* backdround */
     .base-bg {
-      @apply bg-gray-100 dark:bg-gray-900;
+        @apply bg-gray-100 dark:bg-gray-900;
     }
     .primary-bg {
-      @apply bg-gray-800 dark:bg-indigo-900;
+        @apply bg-gray-800 dark:bg-indigo-900;
     }
     .secondary-bg {
-      @apply bg-white dark:bg-gray-800;
+        @apply bg-white dark:bg-gray-800;
     }
 
     /* text */
     .base-text {
-      @apply text-gray-800 dark:text-gray-400;
+        @apply text-gray-800 dark:text-gray-400;
     }
     .light-text {
-      @apply text-gray-500 dark:text-gray-400;
+        @apply text-gray-500 dark:text-gray-400;
     }
     .white-text {
-      @apply text-white dark:text-gray-300;
+        @apply text-white dark:text-gray-300;
     }
     .primary-text {
-      @apply text-gray-800 dark:text-indigo-900;
+        @apply text-gray-800 dark:text-indigo-900;
     }
     .green-text {
-      @apply text-green-400 dark:text-green-400;
+        @apply text-green-400 dark:text-green-400;
     }
     .red-text {
-      @apply text-red-500 dark:text-red-400;
+        @apply text-red-500 dark:text-red-400;
     }
 
     /* divider */
     .gray-divider {
-      @apply divide-gray-100 dark:divide-gray-900;
+        @apply divide-gray-100 dark:divide-gray-900;
     }
-  }
+}

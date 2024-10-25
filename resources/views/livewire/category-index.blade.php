@@ -6,16 +6,14 @@
 
 <div class="p-3 flex flex-col gap-3">
 
-    <select wire:model.live="filters.type" class="full border-none rounded-lg secondary-bg light-text">
+    <select wire:model.live="filters.type" class="w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
         <option value="expense">Expenses</option>
         <option value="income">Incomes</option>
     </select>
 
     <div class=" flex items-center gap-3">
-        <input class="w-full border-none rounded-lg secondary-bg light-text" type="date"
-            wire:model.live="filters.start_date">
-        <input class="w-full border-none rounded-lg secondary-bg light-text" type="date"
-            wire:model.live="filters.end_date">
+        <x-text-input type="date" wire:model.live="filters.start_date" />
+        <x-text-input type="date" wire:model.live="filters.end_date" />
     </div>
 
 
@@ -25,7 +23,7 @@
         'green-text' => $filters['type'] == 'income',
     ])>
         {{ number_format($this->categories->sum('total'), $this->selectedCountry->decimal_points) }}
-        <span class=" uppercase text-xs font-thin">{{ $this->selectedCountry->currency }}</span>
+        <x-active-currency />
     </div>
 
     {{-- Main Categories --}}
@@ -48,8 +46,7 @@
                                     'green-text' => $filters['type'] == 'income',
                                 ])>
                                 {{ $category->formatted_total }}
-                                <span class=" uppercase text-xs font-thin">{{ $this->selectedCountry->currency }}</span>
-                            </a>
+                                <x-active-currency /> </a>
                             <a wire:navigate
                                 href="{{ route('transaction.index', [
                                     'filters[category_id]' => $this->categories->where('category_id', $category->id)->pluck('id')->toArray(),
@@ -61,8 +58,7 @@
                                     'red-text' => $filters['type'] == 'expense',
                                     'green-text' => $filters['type'] == 'income',
                                 ])> {{ $category->formatted_sub_categories_total }}
-                                <span class=" uppercase text-xs font-thin">{{ $this->selectedCountry->currency }}</span>
-                            </a>
+                                <x-active-currency /> </a>
                         @endif
                     </div>
                     <div wire:navigate
@@ -79,7 +75,7 @@
                             'red-text' => $filters['type'] == 'expense',
                             'green-text' => $filters['type'] == 'income',
                         ])> {{ $category->formatted_grand_total }}
-                        <span class=" uppercase text-xs font-thin">{{ $this->selectedCountry->currency }}</span>
+                        <x-active-currency />
                     </div>
                 </div>
 
@@ -100,9 +96,7 @@
                                         'red-text' => $filters['type'] == 'expense',
                                         'green-text' => $filters['type'] == 'income',
                                     ])> {{ $sub_category->formatted_total }}
-                                    <span
-                                        class=" uppercase text-xs font-thin">{{ $this->selectedCountry->currency }}</span>
-                                </a>
+                                    <x-active-currency /> </a>
                             </div>
                         @endif
                     @endforeach

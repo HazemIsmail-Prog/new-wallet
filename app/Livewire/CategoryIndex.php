@@ -24,7 +24,6 @@ class CategoryIndex extends Component
         return session('activeCountry');
     }
 
-    
     public function applyFilters(Builder $query)
     {
         return $query
@@ -50,6 +49,7 @@ class CategoryIndex extends Component
             }], DB::raw('amount / ' . $this->selectedCountry->factor))
             ->get();
 
+        // loop to get sum('total') of sub categories for each category
         $categories = $categories->map(function ($category) use ($categories) {
             $category->sub_categories_total =
                 $category->category_id
@@ -58,6 +58,8 @@ class CategoryIndex extends Component
             return $category;
         });
 
+        // loop to get grand total for each parent category
+        // then get formatted amount for all categories
         $categories = $categories->map(function ($category) {
             $category->grand_total = $category->total + $category->sub_categories_total;
 

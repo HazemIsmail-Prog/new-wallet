@@ -4,8 +4,10 @@
     </h2>
 </x-slot>
 
-<div x-data="transactionModal()" x-init="getTargetName()" class="p-3 max-w-md mx-auto flex flex-col items-center gap-4">
-    <div class="inline-flex w-full shadow-sm gap-1" role="group">
+<div x-data="transactionModal()" x-init="getTargetName()" class="p-3 flex flex-col h-full justify-end items-center gap-3">
+
+    {{-- transaction types row --}}
+    <div class="w-full flex shadow-sm gap-1" role="group">
         <template x-for="(value, key) in transaction_types" :key="key">
             <button type="button" @click="setTransaction_type(key)"
                 class="
@@ -30,14 +32,20 @@
         </template>
     </div>
 
+    {{-- wallet and target selectors row --}}
     <div class="w-full flex justify-between items-center gap-3">
         <button wire:ignore type="button" @click="getCurrentRemainingAmount({{ $selectedWallet }})"
             class="w-full px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700 active:bg-gray-50 dark:active:bg-gray-700 transition ease-in-out duration-150">
             <div>
                 {{ $selectedWallet->name }}
             </div>
-            <div>
-                {{ number_format($selectedWallet->totalRemaining, $this->selectedCountry->decimal_points) }}
+            <div @class([
+                'font-extrabold text-xs',
+                'red-text' => $selectedWallet->totalRemaining < 0,
+                'green-text' => $selectedWallet->totalRemaining > 0,
+            ])>
+                {{ $selectedWallet->formattedTotalRemaining }}
+                <x-active-currency />
             </div>
         </button>
 
@@ -58,233 +66,200 @@
         </button>
     </div>
 
-    <div class="flex flex-col items-center w-full relative">
-        <h1 class="mt-6 font-extrabold text-2xl text-gray-800 dark:text-gray-400" x-text="amount">
-            <span class="font-light text-sm uppercase">{{ $this->selectedCountry->currency }}</span>
-        </h1>
-        <div @click="backspace()" class=" absolute right-7 primary-text bottom-0 text-3xl ">
-            <x-svgs.back />
+    {{-- amount row --}}
+    <div class="w-full flex items-center justify-between">
+        <div class="w-full flex flex-col items-center py-3">
+            <h1 class=" text-center flex-1 font-extrabold text-2xl base-text" x-text="amount"></h1>
+            <x-input-error :messages="$errors->get('form.amount')" />
         </div>
-
-
-        <x-input-error :messages="$errors->get('form.amount')" />
+        <x-svgs.back @click="backspace" class="!w-10 !h-10 primary-text text-3xl " />
     </div>
 
     <x-calculator />
 
-    <input wire:model="form.notes"
-        class="border-none dark:bg-gray-700 dark:text-gray-300 dark:placeholder:text-gray-500 w-full rounded-lg"
-        placeholder="notes" type="text">
-
-    <div class="flex w-full gap-4">
-        <input wire:model="form.date" class="border-none w-full rounded-lg dark:bg-gray-700 dark:text-gray-300"
-            type="date">
-        <input wire:model="form.time" class="border-none w-full rounded-lg dark:bg-gray-700 dark:text-gray-300"
-            type="time">
+    {{-- notes date and time --}}
+    <x-text-input placeholder="notes..." type="text" wire:model="form.notes" />
+    <div class="w-full flex items-center gap-3">
+        <x-text-input type="date" wire:model="form.date" />
+        <x-text-input type="time" wire:model="form.time" />
     </div>
 
+    {{-- Save Button --}}
     <button class="w-full text-white rounded-lg p-4 bg-gray-900 dark:bg-indigo-800 dark:text-gray-300"
         wire:click="save">Save</button>
 
     {{-- Modals --}}
+
+    {{-- Wallets Modal --}}
     <x-my-modal modalName="showWalletsModal" closeAction="resetModals()" title="Select Wallet">
-        @foreach ($this->walletsList->where('id', '!=', $this->selectedWallet->id) as $wallet)
-<div 
-                    @click="handleSelection('App\\Models\\Wallet',{{ $wallet }})"
-                class="flex items-center justify-between cursor-pointer p-3 base-text secondary-bg">
-                <div>{{ $wallet->name }}</div> @if ($wallet->totalRemaining !== 0)
-<div
-            @class([
-                'font-extrabold text-xs',
-                'red-text' => $wallet->totalRemaining < 0,
-                'green-text' => $wallet->totalRemaining > 0,
-            ])>
-            {{ number_format(abs($wallet->totalRemaining), $this->selectedCountry->decimal_points) }} <span
-            class="uppercase font-thin">{{ $this->selectedCountry->currency }}</span> </div>
- @endif
+        @foreach ($this->availableWalletsList as $wallet)
+            <div @click="handleSelection('App\\Models\\Wallet',{{ $wallet }})"
+                style="background-color: {{ $wallet->color }}"
+                class="flex justify-between cursor-pointer items-center bg-gradient-to-bl from-gray-700/50 to-transparent p-3 white-text">
+                <div>{{ $wallet->name }}</div>
+                @if ($wallet->totalRemaining !== 0)
+                    <div>
+                        {{ $wallet->formattedTotalRemaining }}
+                        <x-active-currency />
+                    </div>
+                @endif
             </div>
         @endforeach
-        </x-my-modal>
+    </x-my-modal>
 
-        <x-my-modal modalName="showContactsModal" closeAction="resetModals()" title="Select Contact">
+    {{-- Contacts Modal --}}
+    <x-my-modal modalName="showContactsModal" closeAction="resetModals()" title="Select Contact">
         @foreach ($this->contactsList as $contact)
-        <div @click="handleSelection('App\\Models\\Contact',{{ $contact }})"
-        class="flex items-center justify-between cursor-pointer p-3 base-text secondary-bg">
-        <div>{{ $contact->name }}</div>
-        @if ($contact->totalRemaining !== 0)
-        <div @class([
-            'font-extrabold text-xs',
-            'red-text' => $contact->totalRemaining < 0,
-            'green-text' => $contact->totalRemaining > 0,
-        ])>
-        {{ number_format(abs($contact->totalRemaining), $this->selectedCountry->decimal_points) }}
-        <span class="uppercase font-thin">{{ $this->selectedCountry->currency }}</span>
-        </div>
-        @endif
-        </div>
+            <div @click="handleSelection('App\\Models\\Contact',{{ $contact }})"
+                class="flex items-center justify-between cursor-pointer p-3 base-text secondary-bg">
+                <div>{{ $contact->name }}</div>
+                @if ($contact->totalRemaining !== 0)
+                    <div @class([
+                        'font-extrabold text-xs',
+                        'red-text' => $contact->totalRemaining < 0,
+                        'green-text' => $contact->totalRemaining > 0,
+                    ])>
+                        {{ $contact->formattedTotalRemaining }}
+                        <x-active-currency />
+                    </div>
+                @endif
+            </div>
         @endforeach
+    </x-my-modal>
+
+    {{-- Categories Modal --}}
+    @foreach (['expense', 'income'] as $type)
+        @php
+            $modalName = $type == 'income' ? 'showIncomesModal' : 'showExpensesModal';
+            $title = $type == 'income' ? 'Select Income' : 'Select Expense';
+        @endphp
+        <x-my-modal :modalName="$modalName" closeAction="resetModals()" :title="$title">
+            <x-slot name="mostUsedItems">
+                <div class="flex flex-row-reverse flex-wrap items-center justify-center gap-3">
+                    @foreach ($this->mostUsedCategoriesList($type) as $category)
+                        <span @click="handleSelection('App\\Models\\Category',{{ $category }})"
+                            class="secondary-bg cursor-pointer light-text text-sm font-medium px-3 py-1 rounded">{{ $category->name }}</span>
+                    @endforeach
+                </div>
+            </x-slot>
+            <div class="flex flex-col gap-3 base-bg">
+                @foreach ($this->parentCategoriesList($type) as $category)
+                    <div class="rounded-lg secondary-bg base-text divide-y-2 gray-divider overflow-clip">
+                        <div @click="handleSelection('App\\Models\\Category',{{ $category }})"
+                            class=" p-3 cursor-pointer primary-bg white-text flex items-center justify-between">
+                            <div>{{ $category->name }}</div>
+                        </div>
+                        @forelse ($this->subCategoriesList($category->id) as $sub_category)
+                            <div @click="handleSelection('App\\Models\\Category',{{ $sub_category }})"
+                                class=" cursor-pointer flex items-center justify-between p-3">
+                                <div>{{ $sub_category->name }}</div>
+                            </div>
+                        @empty
+                        @endforelse
+                    </div>
+                @endforeach
+            </div>
         </x-my-modal>
+    @endforeach
 
-        <x-my-modal modalName="showIncomesModal" closeAction="resetModals()" title="Select Income">
-        <x-slot name="mostUsedItems">
-        <div class="flex flex-row-reverse flex-wrap items-center justify-center gap-3">
-        @foreach ($this->categoriesList->where('type',
-        'income')->sortByDesc('transaction_count')->take(10) as $category)
-        <span @click="handleSelection('App\\Models\\Category',{{ $category }})"
-        class="secondary-bg cursor-pointer light-text text-sm font-medium px-3 py-1 rounded">{{ $category->name }}</span>
-        @endforeach
-        </div>
-        </x-slot>
-        <div class="flex flex-col gap-3 base-bg">
-        @foreach ($this->categoriesList->where('type', 'income')->where('category_id',
-        null) as $category)
-        <div class="rounded-lg secondary-bg base-text divide-y-2 gray-divider overflow-clip">
-        <div @click="handleSelection('App\\Models\\Category',{{ $category }})"
-        class=" p-3 cursor-pointer primary-bg white-text flex items-center justify-between">
-        {{ $category->name }}
-        </div>
-        @if ($this->categoriesList->where('category_id', $category->id)->count() > 0)
-        @foreach ($this->categoriesList->where('category_id', $category->id) as $sub_category)
-        <div @click="handleSelection('App\\Models\\Category',{{ $sub_category }})"
-        class=" cursor-pointer flex items-center justify-between p-3">
-        {{ $sub_category->name }}
-        </div>
-        @endforeach
-        @endif
-        </div>
-        @endforeach
-        </div>
-        </x-my-modal>
+</div>
 
-        <x-my-modal modalName="showExpensesModal" closeAction="resetModals()" title="Select Expense">
-        <x-slot name="mostUsedItems">
-        <div class="flex flex-row-reverse flex-wrap items-center justify-center gap-3">
-        @foreach ($this->categoriesList->where('type',
-        'expense')->sortByDesc('transaction_count')->take(10) as $category)
-        <span @click="handleSelection('App\\Models\\Category',{{ $category }})"
-        class="secondary-bg cursor-pointer light-text text-sm font-medium px-3 py-1 rounded">{{ $category->name }}</span>
-        @endforeach
-        </div>
-        </x-slot>
-        <div class="flex flex-col gap-3 base-bg">
-        @foreach ($this->categoriesList->where('type', 'expense')->where('category_id',
-        null) as $category)
-        <div class="rounded-lg secondary-bg base-text divide-y-2 gray-divider overflow-clip">
-        <div @click="handleSelection('App\\Models\\Category',{{ $category }})"
-        class=" p-3 cursor-pointer primary-bg white-text flex items-center justify-between">
-        {{ $category->name }}
-        </div>
-        @if ($this->categoriesList->where('category_id', $category->id)->count() > 0)
-        @foreach ($this->categoriesList->where('category_id', $category->id) as $sub_category)
-        <div @click="handleSelection('App\\Models\\Category',{{ $sub_category }})"
-        class=" cursor-pointer flex items-center justify-between p-3">
-        {{ $sub_category->name }}
-        </div>
-        @endforeach
-        @endif
-        </div>
-        @endforeach
-        </div>
-        </x-my-modal>
-
-        </div>
-
-        <script>
-            function getTransactionTypes() {
-                return {
-                    expense: {
-                        label: 'Expense',
-                        list: 'categoriesList',
-                        modal: 'showExpensesModal'
-                    },
-                    income: {
-                        label: 'Income',
-                        list: 'categoriesList',
-                        modal: 'showIncomesModal'
-                    },
-                    transfer: {
-                        label: 'Transfer',
-                        list: 'walletsList',
-                        modal: 'showWalletsModal'
-                    },
-                    loan_to: {
-                        label: 'Loan To',
-                        list: 'contactsList',
-                        modal: 'showContactsModal'
-                    },
-                    loan_from: {
-                        label: 'Loan From',
-                        list: 'contactsList',
-                        modal: 'showContactsModal'
-                    }
-                };
+<script>
+    function getTransactionTypes() {
+        return {
+            expense: {
+                label: 'Expense',
+                list: 'categoriesList',
+                modal: 'showExpensesModal'
+            },
+            income: {
+                label: 'Income',
+                list: 'categoriesList',
+                modal: 'showIncomesModal'
+            },
+            transfer: {
+                label: 'Transfer',
+                list: 'walletsList',
+                modal: 'showWalletsModal'
+            },
+            loan_to: {
+                label: 'Loan To',
+                list: 'contactsList',
+                modal: 'showContactsModal'
+            },
+            loan_from: {
+                label: 'Loan From',
+                list: 'contactsList',
+                modal: 'showContactsModal'
             }
+        };
+    }
 
-            function transactionModal() {
-                return {
-                    ...calculator(), // Spread the calculator methods into this object
+    function transactionModal() {
+        return {
+            ...calculator(), // Spread the calculator methods into this object
 
-                    categoriesList: @json($this->categoriesList),
-                    walletsList: @json($this->walletsList),
-                    contactsList: Array.isArray(@json($this->contactsList)) ? @json($this->contactsList) : Object.values(
-                        @json($this->contactsList)),
+            categoriesList: @json($this->categoriesList),
+            walletsList: @json($this->walletsList),
+            contactsList: Array.isArray(@json($this->contactsList)) ? @json($this->contactsList) : Object.values(
+                @json($this->contactsList)),
 
-                    showWalletsModal: false,
-                    showContactsModal: false,
-                    showIncomesModal: false,
-                    showExpensesModal: false,
+            showWalletsModal: false,
+            showContactsModal: false,
+            showIncomesModal: false,
+            showExpensesModal: false,
 
-                    target_name: '---',
-                    target_id: @entangle('form.target_id'),
-                    target_type: @entangle('form.target_type'),
-                    amount: @entangle('form.amount'),
+            target_name: '---',
+            target_id: @entangle('form.target_id'),
+            target_type: @entangle('form.target_type'),
+            amount: @entangle('form.amount'),
 
-                    transaction_type: @entangle('form.type'),
-                    transaction_types: getTransactionTypes(), // Refactored here
+            transaction_type: @entangle('form.type'),
+            transaction_types: getTransactionTypes(), // Refactored here
 
 
-                    handleSelection(model, selected) {
-                        this.target_id = selected['id'];
-                        this.target_name = selected['name'];
-                        this.target_type = model;
-                        this.resetModals();
-                    },
+            handleSelection(model, selected) {
+                this.target_id = selected['id'];
+                this.target_name = selected['name'];
+                this.target_type = model;
+                this.resetModals();
+            },
 
-                    getCurrentRemainingAmount(wallet) {
-                        this.amount = wallet.totalRemaining
-                    },
+            getCurrentRemainingAmount(wallet) {
+                this.amount = wallet.totalRemaining
+            },
 
-                    getTargetName() {
-                        const listName = this.transaction_types[this.transaction_type]?.list;
-                        const list = this[listName];
+            getTargetName() {
+                const listName = this.transaction_types[this.transaction_type]?.list;
+                const list = this[listName];
 
-                        if (list) {
-                            const target = list.find(item => item.id === this.target_id);
-                            if (target) this.target_name = target.name;
-                        }
-                    },
-
-                    setTransaction_type(type) {
-                        if (this.transaction_type != type) {
-                            this.transaction_type = type;
-                            this.target_name = '---';
-                            this.target_id = null;
-                        }
-                        this.toggleModals();
-                    },
-
-                    toggleModals() {
-                        this.resetModals();
-                        const modalName = this.transaction_types[this.transaction_type]?.modal;
-                        if (modalName) this[modalName] = true;
-                    },
-
-                    resetModals() {
-                        this.showWalletsModal = false;
-                        this.showContactsModal = false;
-                        this.showIncomesModal = false;
-                        this.showExpensesModal = false;
-                    },
+                if (list) {
+                    const target = list.find(item => item.id === this.target_id);
+                    if (target) this.target_name = target.name;
                 }
-            }
-        </script>)
+            },
+
+            setTransaction_type(type) {
+                if (this.transaction_type != type) {
+                    this.transaction_type = type;
+                    this.target_name = '---';
+                    this.target_id = null;
+                }
+                this.toggleModals();
+            },
+
+            toggleModals() {
+                this.resetModals();
+                const modalName = this.transaction_types[this.transaction_type]?.modal;
+                if (modalName) this[modalName] = true;
+            },
+
+            resetModals() {
+                this.showWalletsModal = false;
+                this.showContactsModal = false;
+                this.showIncomesModal = false;
+                this.showExpensesModal = false;
+            },
+        }
+    }
+</script>
