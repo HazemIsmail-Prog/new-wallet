@@ -24,12 +24,12 @@
         </div>
     </div>
 
-    @foreach ($this->transactions as $date => $transactions)
+    @foreach ($this->transactions as $date => $group)
         <x-transaction-day-group 
-            :transactions="$transactions" 
-            :date="$transactions->first()->date" 
-            :formattedTotalIncomes="$transactions->formattedTotalIncomes" 
-            :formattedTotalExpenses="$transactions->formattedTotalExpenses" 
+            :transactions="$group['transactions']" 
+            :date="$group['transactions'][0]['date']" 
+            :formattedTotalIncomes="$group['formattedTotalIncomes']" 
+            :formattedTotalExpenses="$group['formattedTotalExpenses']" 
         />
     @endforeach
 

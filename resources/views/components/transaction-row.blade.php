@@ -16,7 +16,7 @@
                 </div>
                 <div class="flex flex-col items-end">
                     <div class=" red-text font-bold">
-                        {{ number_format($transaction->amount, $this->selectedCountry->decimal_points) }}
+                        {{ number_format($transaction->amount, session('activeCountry')->decimal_points) }}
                         <x-active-currency/>                    </div>
                     <div class=" text-xs light-text">{{ $transaction->time->format('H:i') }}</div>
                 </div>
@@ -30,7 +30,7 @@
                 </div>
                 <div class="flex flex-col items-end">
                     <div class=" red-text font-bold">
-                        {{ number_format($transaction->amount, $this->selectedCountry->decimal_points) }}
+                        {{ number_format($transaction->amount, session('activeCountry')->decimal_points) }}
                         <x-active-currency/>                    </div>
                     <div class=" text-xs light-text">{{ $transaction->time->format('H:i') }}</div>
                 </div>
@@ -48,7 +48,7 @@
                 </div>
                 <div class="flex flex-col items-end">
                     <div class=" green-text font-bold">
-                        {{ number_format($transaction->amount, $this->selectedCountry->decimal_points) }}
+                        {{ number_format($transaction->amount, session('activeCountry')->decimal_points) }}
                         <x-active-currency/>                    </div>
                     <div class=" text-xs light-text">{{ $transaction->time->format('H:i') }}</div>
                 </div>
@@ -62,7 +62,7 @@
                 </div>
                 <div class="flex flex-col items-end">
                     <div class=" green-text font-bold">
-                        {{ number_format($transaction->amount, $this->selectedCountry->decimal_points) }}
+                        {{ number_format($transaction->amount, session('activeCountry')->decimal_points) }}
                         <x-active-currency/>                    </div>
                     <div class=" text-xs light-text">{{ $transaction->time->format('H:i') }}</div>
                 </div>
@@ -83,7 +83,7 @@
                 </div>
                 <div class="flex flex-col items-end">
                     <div class="font-bold">
-                        {{ number_format($transaction->amount, $this->selectedCountry->decimal_points) }}
+                        {{ number_format($transaction->amount, session('activeCountry')->decimal_points) }}
                         <x-active-currency/>                    </div>
                     <div class=" text-xs light-text">{{ $transaction->time->format('H:i') }}</div>
                 </div>

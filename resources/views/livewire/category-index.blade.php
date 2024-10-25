@@ -22,7 +22,7 @@
         'red-text' => $filters['type'] == 'expense',
         'green-text' => $filters['type'] == 'income',
     ])>
-        {{ number_format($this->categories->sum('total'), $this->selectedCountry->decimal_points) }}
+        {{ number_format($this->categories->sum('total'), session('activeCountry')->decimal_points) }}
         <x-active-currency />
     </div>
 

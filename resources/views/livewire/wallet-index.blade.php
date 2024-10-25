@@ -11,7 +11,7 @@
             <div class="flex-1">
                 <h1 class=" font-extralight text-sm">Total Available</h1>
                 <h1 class="text-start text-3xl font-extrabold">
-                    {{ number_format($this->wallets->sum('totalRemaining'), $this->selectedCountry->decimal_points) }}
+                    {{ number_format($this->wallets->sum('totalRemaining'), session('activeCountry')->decimal_points) }}
                     <x-active-currency />
                 </h1>
             </div>
@@ -51,7 +51,7 @@
                 <div class="font-normal text-xs">
                     <div class=" text-right">Available Amount</div>
                     <div class=" text-2xl font-extrabold">
-                        {{ number_format($wallet->totalRemaining, $this->selectedCountry->decimal_points) }}
+                        {{ $wallet->formattedTotalRemaining }}
                         <x-active-currency /></div>
                 </div>
             </a>

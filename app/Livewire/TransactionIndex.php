@@ -73,16 +73,7 @@ class TransactionIndex extends Component
                 return $transaction->date->format('Y-m-d');
             });
 
-        $transactions->map(function ($group) {
-            $group->totalIncomes = $group->whereIn('type', ['income', 'loan_from'])->sum('amount');
-            $group->totalExpenses = $group->whereIn('type', ['expense', 'loan_to'])->sum('amount');
-            $group->formattedTotalExpenses = number_format($group->totalExpenses,session('activeCountry')->decimal_points);
-            $group->formattedTotalIncomes = number_format($group->totalIncomes,session('activeCountry')->decimal_points);
-            return $group;
-        });
-
-
-        // Paginate grouped transactions (10 days per page)
+        // Paginate grouped transactions (5 days per page)
         $currentPage = LengthAwarePaginator::resolveCurrentPage();
         $perPage = 5; // 5 days per page
         $days = $transactions->keys(); // Get the list of days
@@ -90,9 +81,25 @@ class TransactionIndex extends Component
         // Slice the days to get the current page
         $slicedDays = $days->slice(($currentPage - 1) * $perPage, $perPage);
 
-        // Create a new collection for the paginated results
+        // Create a new collection for the paginated results with sum of amounts for each date group
         $paginatedTransactions = $slicedDays->mapWithKeys(function ($day) use ($transactions) {
-            return [$day => $transactions[$day]]; // Keep the transactions for each day
+
+            $transactionsForDay = $transactions[$day];
+            $totalIncomes = $transactionsForDay->whereIn('type', ['income', 'loan_from'])->sum('amount');
+            $totalExpenses = $transactionsForDay->whereIn('type', ['expense', 'loan_to'])->sum('amount');
+            $formattedTotalExpenses = number_format($totalExpenses, session('activeCountry')->decimal_points);
+            $formattedTotalIncomes = number_format($totalIncomes, session('activeCountry')->decimal_points);
+
+            // Return each date group with its transactions and total amount
+            return [
+                $day => [
+                    'transactions' => $transactionsForDay,
+                    'totalIncomes' => $totalIncomes,
+                    'totalExpenses' => $totalExpenses,
+                    'formattedTotalExpenses' => $formattedTotalExpenses,
+                    'formattedTotalIncomes' => $formattedTotalIncomes,
+                ]
+            ];
         });
 
         return new LengthAwarePaginator(
@@ -103,6 +110,7 @@ class TransactionIndex extends Component
             ['path' => LengthAwarePaginator::resolveCurrentPath()]
         );
     }
+
 
     public function applyFilters(Builder $query)
     {
