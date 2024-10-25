@@ -6,7 +6,7 @@
 
 <div class="p-3 flex flex-col gap-3">
 
-    <select wire:model.live="filters.type" class="w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
+    <select wire:model.live="filters.type" class="w-full secondary-bg border-none light-text focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md">
         <option value="expense">Expenses</option>
         <option value="income">Incomes</option>
     </select>
