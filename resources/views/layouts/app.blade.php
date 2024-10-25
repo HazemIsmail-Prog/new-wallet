@@ -37,9 +37,9 @@
 
         <div
             class=" max-w-md mx-auto w-full mt-auto flex justify-between items-center  secondary-bg light-text shadow-lg z-10 h-16">
-            <x-bottom-nav-link icon="wallet" title="Countries" :active="request()->routeIs('country.*')" href="{{ route('country.index') }}" />
-            <x-bottom-nav-link icon="wallet" title="Contacts" :active="request()->routeIs('contact.*')" href="{{ route('contact.index') }}" />
-            <x-bottom-nav-link icon="wallet" title="Categories" :active="request()->routeIs('category.*')"
+            <x-bottom-nav-link icon="countries" title="Countries" :active="request()->routeIs('country.*')" href="{{ route('country.index') }}" />
+            <x-bottom-nav-link icon="contacts" title="Contacts" :active="request()->routeIs('contact.*')" href="{{ route('contact.index') }}" />
+            <x-bottom-nav-link icon="categories" title="Categories" :active="request()->routeIs('category.*')"
                 href="{{ route('category.index') }}" />
             <x-bottom-nav-link icon="transactions" title="Transactions" :active="request()->routeIs('transaction.*')"
                 href="{{ route('transaction.index') }}" />

@@ -1,11 +1,11 @@
 <div class="w-full h-52 flex">
     <div
-        class="flex-1 grid grid-cols-4 grid-rows-4 bg-white dark:text-gray-400 dark:bg-gray-700 rounded-xl overflow-clip dark:border-gray-900 divide-x divide-y dark:divide-gray-900 border">
+        class="flex-1 grid grid-cols-4 grid-rows-4 secondary-bg dark:text-gray-400 rounded-xl overflow-clip dark:border-gray-900 divide-x divide-y dark:divide-gray-900 border">
         <input class="border-t border-l dark:border-gray-900" type="button" value="7" @click="dis('7')">
         <input type="button" value="8" @click="dis('8')">
         <input type="button" value="9" @click="dis('9')">
         <div
-            class="flex flex-col flex-3 row-span-3 items-center justify-evenly bg-gray-900 text-white dark:bg-indigo-900 dark:text-gray-400 divide-y dark:divide-gray-900">
+            class="flex flex-col flex-3 row-span-3 items-center justify-evenly primary-bg white-text divide-y dark:divide-gray-900">
             <input class="w-full text-2xl" type="button" value="÷" @click="dis('/')">
             <input class="w-full text-2xl" type="button" value="×" @click="dis('*')">
             <input class="w-full text-2xl" type="button" value="-" @click="dis('-')">
@@ -19,9 +19,9 @@
         <input type="button" value="3" @click="dis('3')">
         <input type="button" value="." @click="dis('.')">
         <input type="button" value="0" @click="dis('0')">
-        <input class="text-2xl bg-gray-900 text-white dark:bg-indigo-900 dark:text-gray-400" type="button"
+        <input class="text-2xl primary-bg white-text" type="button"
             value="c" @click="clr()">
-        <input class="w-full h-full text-2xl bg-gray-900 text-white dark:bg-indigo-900 dark:text-gray-400"
+        <input class="w-full h-full text-2xl primary-bg white-text"
             type="button" value="=" @click="solve()">
     </div>
 </div>

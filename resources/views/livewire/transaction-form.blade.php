@@ -7,7 +7,7 @@
 <div x-data="transactionModal()" x-init="getTargetName()" class="p-3 flex flex-col h-full justify-end items-center gap-3">
 
     {{-- transaction types row --}}
-    <div class="w-full flex shadow-sm gap-1" role="group">
+    <div class="w-full flex gap-1" role="group">
         <template x-for="(value, key) in transaction_types" :key="key">
             <button type="button" @click="setTransaction_type(key)"
                 class="
@@ -16,16 +16,12 @@
                 text-sm 
                 rounded-md 
                 font-medium 
-                border 
-                dark:border-none
                 rounded-l-lg 
-                text-gray-900 
-                dark:text-gray-400 
-                border-gray-900 
-                dark:border-white 
+                base-bg
+                base-text
                 "
                 :class="transaction_type === key ?
-                    'ring-gray-500 bg-gray-900 text-white dark:text-gray-900 dark:bg-indigo-700' :
+                    'white-text primary-bg' :
                     ''">
                 <span x-text="value.label"></span>
             </button>
@@ -33,9 +29,9 @@
     </div>
 
     {{-- wallet and target selectors row --}}
-    <div class="w-full flex justify-between items-center gap-3">
+    <div class="w-full flex justify-between items-stretch gap-3">
         <button wire:ignore type="button" @click="getCurrentRemainingAmount({{ $selectedWallet }})"
-            class="w-full px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700 active:bg-gray-50 dark:active:bg-gray-700 transition ease-in-out duration-150">
+            class="w-full px-3 py-2 text-sm font-medium rounded-md secondary-bg base-text transition ease-in-out duration-150">
             <div>
                 {{ $selectedWallet->name }}
             </div>
@@ -50,18 +46,13 @@
         </button>
 
         <!-- Transaction Arrow SVG -->
-        <template
-            x-if="transaction_type === 'expense' || transaction_type === 'loan_to' || transaction_type === 'transfer' || transaction_type === 'income' || transaction_type === 'loan_from'">
-            <svg :class="transaction_type === 'income' || transaction_type === 'loan_from' ? 'rotate-180' : ''"
-                class="dark:text-indigo-700 w-12 transition-all duration-150" xmlns="http://www.w3.org/2000/svg"
-                fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-            </svg>
-        </template>
-
+        <x-svgs.arrow
+            x-bind:style="transaction_type === 'income' || transaction_type === 'loan_from' ? 'transform: rotate(180deg);' :
+                'transform: rotate(0deg);'"
+            class="!w-12 !h-12 transition-all duration-150 primary-text text-2xl font-extrabold" />
 
         <button type="button" @click="toggleModals"
-            class=" @error('form.target_id') border border-red-600 dark:border-red-400 @enderror w-full inline-flex justify-between items-center px-3 py-2 text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700 active:bg-gray-50 dark:active:bg-gray-700 transition ease-in-out duration-150">
+            class=" @error('form.target_id') border border-red-600 dark:border-red-400 @enderror w-full px-3 py-2 text-sm font-medium rounded-md secondary-bg base-text transition ease-in-out duration-150">
             <div class="flex-1" x-text="target_name"></div>
         </button>
     </div>
@@ -85,7 +76,7 @@
     </div>
 
     {{-- Save Button --}}
-    <button class="w-full text-white rounded-lg p-4 bg-gray-900 dark:bg-indigo-800 dark:text-gray-300"
+    <button class="w-full white-text primary-bg rounded-lg p-4"
         wire:click="save">Save</button>
 
     {{-- Modals --}}
