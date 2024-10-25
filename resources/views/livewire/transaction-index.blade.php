@@ -9,7 +9,7 @@
     <x-text-input placeholder="Search..." type="text" wire:model.live="filters.search" />
 
     <div class=" flex items-center gap-3">
-        <x-text-input placeholder="Search..." type="date" wire:model.live="filters.start_date" />
+        <x-text-input type="date" wire:model.live="filters.start_date" />
         <x-text-input type="date" wire:model.live="filters.end_date" />
     </div>
 
