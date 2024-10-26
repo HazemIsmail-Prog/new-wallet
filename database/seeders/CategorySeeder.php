@@ -150,6 +150,6 @@ class CategorySeeder extends Seeder
             array('id' => '138','name' => 'قاصد خير','type' => 'expense','category_id' => '14','country_id' => '1','created_at' => '2024-09-01 01:47:19','updated_at' => '2024-09-01 01:47:19')
           );
 
-          Category::insert($categories);
+          Category::withoutGlobalScopes()->insert($categories);
     }
 }

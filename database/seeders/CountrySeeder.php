@@ -20,6 +20,6 @@ class CountrySeeder extends Seeder
             array('id' => '4','name' => 'Kuwait','user_id' => '3','currency' => 'KD','decimal_points' => '3','created_at' => '2023-09-02 12:49:51','updated_at' => '2023-09-02 12:49:51')
           );
 
-          Country::insert($countries);
+          Country::withoutGlobalScopes()->insert($countries);
     }
 }

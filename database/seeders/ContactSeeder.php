@@ -39,6 +39,6 @@ class ContactSeeder extends Seeder
             array('id' => '25','name' => 'On Hold','country_id' => '1','created_at' => '2024-10-07 06:34:10','updated_at' => '2024-10-07 06:34:10')
           );
 
-          Contact::insert($contacts);
+          Contact::withoutGlobalScopes()->insert($contacts);
     }
 }

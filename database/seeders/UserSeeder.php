@@ -19,6 +19,6 @@ class UserSeeder extends Seeder
             array('id' => '3', 'name' => 'Mina Adel', 'email' => 'minaadel1085@gmail.com', 'last_selected_country_id' => '4', 'email_verified_at' => NULL, 'password' => '$2y$10$7lD/GOe1hwonjH8drJVnMOhr.xJAuHAqtGROhdpmlnwGtY7iLhL5q', 'remember_token' => NULL, 'created_at' => '2023-09-02 12:49:25', 'updated_at' => '2023-09-02 12:50:07')
         );
 
-        User::insert($users);
+        User::withoutGlobalScopes()->insert($users);
     }
 }

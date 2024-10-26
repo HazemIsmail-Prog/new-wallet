@@ -4834,7 +4834,7 @@ class TransactionSeeder extends Seeder
             array('id' => '4896','country_id' => '1','wallet_id' => '2','target_id' => '57','target_type' => 'App\\Models\\Category','type' => 'expense','amount' => '33000','notes' => 'فيتامينات من مصر','date' => '2024-10-20','time' => '18:57:00','created_at' => '2024-10-20 16:15:13','updated_at' => '2024-10-20 16:15:13')
           );
 
-          Transaction::insert($transactions);
+          Transaction::withoutGlobalScopes()->insert($transactions);
     
     }
 }

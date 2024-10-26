@@ -26,6 +26,6 @@ class WalletSeeder extends Seeder
             array('id' => '23','name' => 'Hazem - CBK','country_id' => '1','init_amount' => '0','order' => '1','is_visible' => '1','color' => '#E3A008','created_at' => '2024-08-24 19:05:06','updated_at' => '2024-08-24 19:05:06')
           );
 
-          Wallet::insert($wallets);
+          Wallet::withoutGlobalScopes()->insert($wallets);
     }
 }

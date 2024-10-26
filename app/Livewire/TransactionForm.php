@@ -55,7 +55,7 @@ class TransactionForm extends Component
     public function mount(Transaction $transaction, Wallet $wallet)
     {
         if (!$transaction->id) {
-            $this->selectedWallet = $this->walletsList->where('id', $wallet->id)->first();
+            $this->selectedWallet = $this->walletsList->findOrFail($wallet->id);
             $this->form->wallet_id = $wallet->id;
             $this->form->date = date('Y-m-d');
             $this->form->time = now()->format('H:i');
