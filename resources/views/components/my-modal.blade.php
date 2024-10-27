@@ -9,7 +9,7 @@
         x-transition:leave-end="opacity-0"
         class="flex flex-col gap-3 base-bg base-text p-3 rounded-lg w-[90%] max-h-[80%] max-w-md shadow-lg transform"
         @click.away="{{ $closeAction }}">
-        <h3 class="text-lg font-semibold">{{ $title }}</h3>
+        <h3 class="text-lg font-semibold" x-text="modalTitle"></h3>
 
         {{-- <input class="w-full border-none rounded-lg secondary-bg base-text placeholder:light-text"
             placeholder="Search..." type="text"> --}}

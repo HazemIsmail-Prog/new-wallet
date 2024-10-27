@@ -14,6 +14,10 @@ class Category extends Model
         static::addGlobalScope(function (Builder $builder) {
             $builder->where('categories.country_id', session('activeCountry')->id);
         });
+
+        static::creating(function ($model) {
+            $model->country_id = session('activeCountry')->id;
+        });
     }
 
     public function transactions()

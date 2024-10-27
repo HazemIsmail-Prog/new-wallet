@@ -4,7 +4,7 @@
     </h2>
 </x-slot>
 
-<div x-data="transactionModal()" x-init="getTargetName()" class="p-3 flex flex-col h-full justify-end items-center gap-3">
+<div x-data="transactionModal()" class="p-3 flex flex-col h-full justify-end items-center gap-3">
 
     {{-- transaction types row --}}
     <div class="w-full flex gap-1" role="group">
@@ -76,13 +76,12 @@
     </div>
 
     {{-- Save Button --}}
-    <button class="w-full white-text primary-bg rounded-lg p-4"
-        wire:click="save">Save</button>
+    <button class="w-full white-text primary-bg rounded-lg p-4" wire:click="save">Save</button>
 
     {{-- Modals --}}
 
     {{-- Wallets Modal --}}
-    <x-my-modal modalName="showWalletsModal" closeAction="resetModals()" title="Select Wallet">
+    <x-my-modal modalName="showWalletsModal" closeAction="resetModals()">
         @foreach ($this->availableWalletsList as $wallet)
             <div @click="handleSelection('App\\Models\\Wallet',{{ $wallet }})"
                 style="background-color: {{ $wallet->color }}"
@@ -99,7 +98,7 @@
     </x-my-modal>
 
     {{-- Contacts Modal --}}
-    <x-my-modal modalName="showContactsModal" closeAction="resetModals()" title="Select Contact">
+    <x-my-modal modalName="showContactsModal" closeAction="resetModals()">
         @foreach ($this->contactsList as $contact)
             <div @click="handleSelection('App\\Models\\Contact',{{ $contact }})"
                 class="flex items-center justify-between cursor-pointer p-3 base-text secondary-bg">
@@ -122,9 +121,8 @@
     @foreach (['expense', 'income'] as $type)
         @php
             $modalName = $type == 'income' ? 'showIncomesModal' : 'showExpensesModal';
-            $title = $type == 'income' ? 'Select Income' : 'Select Expense';
         @endphp
-        <x-my-modal :modalName="$modalName" closeAction="resetModals()" :title="$title">
+        <x-my-modal :modalName="$modalName" closeAction="resetModals()">
             <x-slot name="mostUsedItems">
                 <div class="flex flex-row-reverse flex-wrap items-center justify-center gap-3">
                     @foreach ($this->mostUsedCategoriesList($type) as $category)
@@ -161,27 +159,32 @@
             expense: {
                 label: 'Expense',
                 list: 'categoriesList',
-                modal: 'showExpensesModal'
+                modal: 'showExpensesModal',
+                modalTitle: 'Select Expense',
             },
             income: {
                 label: 'Income',
                 list: 'categoriesList',
-                modal: 'showIncomesModal'
+                modal: 'showIncomesModal',
+                modalTitle: 'Select Income',
             },
             transfer: {
                 label: 'Transfer',
                 list: 'walletsList',
-                modal: 'showWalletsModal'
+                modal: 'showWalletsModal',
+                modalTitle: 'Select Wallet',
             },
             loan_to: {
                 label: 'Loan To',
                 list: 'contactsList',
-                modal: 'showContactsModal'
+                modal: 'showContactsModal',
+                modalTitle: 'Select Contact',
             },
             loan_from: {
                 label: 'Loan From',
                 list: 'contactsList',
-                modal: 'showContactsModal'
+                modal: 'showContactsModal',
+                modalTitle: 'Select Contact',
             }
         };
     }
@@ -200,6 +203,8 @@
             showIncomesModal: false,
             showExpensesModal: false,
 
+            modalTitle : '',
+
             target_name: '---',
             target_id: @entangle('form.target_id'),
             target_type: @entangle('form.target_type'),
@@ -207,6 +212,10 @@
 
             transaction_type: @entangle('form.type'),
             transaction_types: getTransactionTypes(), // Refactored here
+
+            init(){
+                this.getTargetName();
+            },
 
 
             handleSelection(model, selected) {
@@ -242,7 +251,11 @@
             toggleModals() {
                 this.resetModals();
                 const modalName = this.transaction_types[this.transaction_type]?.modal;
-                if (modalName) this[modalName] = true;
+                const modalTitle = this.transaction_types[this.transaction_type]?.modalTitle;
+                if (modalName) {
+                    this[modalName] = true;
+                    this.modalTitle = modalTitle;
+                };
             },
 
             resetModals() {
