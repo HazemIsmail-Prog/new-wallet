@@ -84,7 +84,7 @@
                         x-on:click="show = !show">
                         <x-svgs.vertical-dots />
                         <div x-cloak x-show="show"
-                            class="secondary-bg base-text divide-y absolute top-0 right-8 border shadow-md z-10 overflow-hidden bg-white rounded-lg">
+                            class="secondary-bg base-text divide-y absolute top-0 right-8 border shadow-md z-10 overflow-hidden rounded-lg">
                             <a wire:navigate class=" block p-3 w-full cursor-pointer"
                                 href="{{ route('transaction.index', [
                                     'filters[category_id]' => array_merge(
@@ -126,7 +126,7 @@
                             x-on:click="show = !show">
                             <x-svgs.vertical-dots />
                             <div x-cloak x-show="show"
-                                class=" secondary-bg base-text divide-y absolute top-0 right-8 border shadow-md z-10 overflow-hidden bg-white rounded-lg">
+                                class=" secondary-bg base-text divide-y absolute top-0 right-8 border shadow-md z-10 overflow-hidden rounded-lg">
                                 <a wire:navigate class="block p-3 w-full  whitespace-nowrap cursor-pointer"
                                     href="{{ route('transaction.index', [
                                         'filters[category_id]' => [$sub_category->id],
