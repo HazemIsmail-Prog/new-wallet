@@ -37,41 +37,38 @@
             class="rounded-lg secondary-bg base-text divide-y-2 gray-divider shadow-lg overflow-clip overflow-y-visible">
             <div class="p-3 primary-bg white-text flex items-center justify-between">
                 <div>
-                    <div>
-                        {{ $category->name }}
-                    </div>
+                    <div>{{ $category->name }}</div>
                     @if ($this->categories->where('category_id', $category->id)->count() > 0)
-                        <a wire:navigate
-                            href="{{ route('transaction.index', [
-                                'filters[category_id]' => [$category->id],
-                                'filters[start_date]' => $filters['start_date'],
-                                'filters[end_date]' => $filters['end_date'],
-                            ]) }}"
-                            @class([
+                        {{-- Parent Category Total --}}
+                        @if (abs($category->total) > 0)
+                            <div @class([
                                 'font-extrabold text-xs block',
                                 'red-text' => $filters['type'] == 'expense',
                                 'green-text' => $filters['type'] == 'income',
                             ])>
-                            {{ $category->formatted_total }}
-                            <x-active-currency />
-                        </a>
-                        <a wire:navigate
-                            href="{{ route('transaction.index', [
-                                'filters[category_id]' => $this->categories->where('category_id', $category->id)->pluck('id')->toArray(),
-                                'filters[start_date]' => $filters['start_date'],
-                                'filters[end_date]' => $filters['end_date'],
-                            ]) }}"
-                            @class([
+                                {{ $category->formatted_total }}
+                                <x-active-currency />
+                            </div>
+                        @endif
+
+                        {{-- Sub Categories Total --}}
+                        @if ($category->sub_categories_total != $category->grand_total && $category->sub_categories_total != 0)
+                            <div @class([
                                 'font-extrabold text-xs block',
                                 'red-text' => $filters['type'] == 'expense',
                                 'green-text' => $filters['type'] == 'income',
                             ])>
-                            {{ $category->formatted_sub_categories_total }}
-                            <x-active-currency />
-                        </a>
+                                {{ $category->formatted_sub_categories_total }}
+                                <x-active-currency />
+                            </div>
+                        @endif
                     @endif
                 </div>
+
+                {{-- Grand Total Text & Popup Button --}}
                 <div class=" flex items-center gap-2">
+
+                    {{-- Grand Total Text --}}
                     <div @class([
                         'font-extrabold cursor-pointer',
                         'red-text' => $filters['type'] == 'expense',
@@ -80,30 +77,72 @@
                         {{ $category->formatted_grand_total }}
                         <x-active-currency />
                     </div>
-                    <button x-data="{ show: false }" class=" relative" x-on:click.outside="show = false"
-                        x-on:click="show = !show">
+
+                    {{-- Pop up Button and Menu --}}
+                    <button x-data="{ show: false, deleteConfirmation: false }" class=" relative"
+                        x-on:click.outside="show = false ;deleteConfirmation = false"
+                        x-on:click="show = !show;deleteConfirmation = false">
                         <x-svgs.vertical-dots />
+
+                        {{-- Pop up Menu --}}
                         <div x-cloak x-show="show"
                             class="secondary-bg base-text divide-y absolute top-0 right-8 border shadow-md z-10 overflow-hidden rounded-lg">
-                            <a wire:navigate class=" block p-3 w-full cursor-pointer"
-                                href="{{ route('transaction.index', [
-                                    'filters[category_id]' => array_merge(
-                                        [$category->id],
-                                        $this->categories->where('category_id', $category->id)->pluck('id')->toArray(),
-                                    ),
-                                    'filters[start_date]' => $filters['start_date'],
-                                    'filters[end_date]' => $filters['end_date'],
-                                ]) }}">View
-                                Transactions
-                            </a>
+                            @if (abs($category->total) > 0)
+                                <a wire:navigate class=" block p-3 w-full cursor-pointer"
+                                    href="{{ route('transaction.index', [
+                                        'filters[category_id]' => [$category->id],
+                                        'filters[start_date]' => $filters['start_date'],
+                                        'filters[end_date]' => $filters['end_date'],
+                                    ]) }}">View
+                                    {{ $category->name }}
+                                    Transactions
+                                </a>
+                            @endif
+                            @if (abs($category->sub_categories_total) > 0)
+                                <a wire:navigate class=" block p-3 w-full cursor-pointer"
+                                    href="{{ route('transaction.index', [
+                                        'filters[category_id]' => $this->categories->where('category_id', $category->id)->pluck('id')->toArray(),
+                                        'filters[start_date]' => $filters['start_date'],
+                                        'filters[end_date]' => $filters['end_date'],
+                                    ]) }}">View
+                                    Sub
+                                    Transactions
+                                </a>
+                            @endif
+                            @if ($category->sub_categories_total != $category->grand_total && $category->sub_categories_total != 0)
+                                <a wire:navigate class=" block p-3 w-full cursor-pointer"
+                                    href="{{ route('transaction.index', [
+                                        'filters[category_id]' => array_merge(
+                                            [$category->id],
+                                            $this->categories->where('category_id', $category->id)->pluck('id')->toArray(),
+                                        ),
+                                        'filters[start_date]' => $filters['start_date'],
+                                        'filters[end_date]' => $filters['end_date'],
+                                    ]) }}">View
+                                    All
+                                    Transactions
+                                </a>
+                            @endif
                             <input wire:key="{{ $category->id }}" x-on:click="showModal( null, {{ $category }})"
                                 class="p-3 w-full cursor-pointer" type="button" value="Add Sub-Category">
                             <input wire:key="{{ $category->id }}" x-on:click="showModal({{ $category }}, null )"
                                 class="p-3 w-full cursor-pointer" type="button" value="Edit">
-                            <input wire:confirm="Are you sure?!" wire:click="delete({{ $category }})"
-                                class="p-3 w-full cursor-pointer" type="button" value="Delete">
+                            <template x-if="!deleteConfirmation">
+                                <input x-on:click.stop="deleteConfirmation=true" class="p-3 w-full cursor-pointer"
+                                    type="button" value="Delete">
+
+                            </template>
+                            <template x-if="deleteConfirmation">
+                                <div class=" flex items-center">
+                                    <input wire:click="delete({{ $category }})" class="p-3 w-full cursor-pointer"
+                                        type="button" value="Confirm">
+                                    <input x-on:click.stop="deleteConfirmation = false"
+                                        class="p-3 w-full cursor-pointer" type="button" value="Cancel">
+                                </div>
+                            </template>
                         </div>
                     </button>
+
                 </div>
             </div>
 
@@ -122,8 +161,9 @@
                             {{ $sub_category->formatted_total }}
                             <x-active-currency />
                         </div>
-                        <button x-data="{ show: false }" class=" relative" x-on:click.outside="show = false"
-                            x-on:click="show = !show">
+                        <button x-data="{ show: false, deleteConfirmation: false }" class=" relative"
+                            x-on:click.outside="show = false ;deleteConfirmation = false"
+                            x-on:click="show = !show;deleteConfirmation = false">
                             <x-svgs.vertical-dots />
                             <div x-cloak x-show="show"
                                 class=" secondary-bg base-text divide-y absolute top-0 right-8 border shadow-md z-10 overflow-hidden rounded-lg">
@@ -137,8 +177,19 @@
                                 </a>
                                 <input x-on:click="showModal( {{ $sub_category }}, {{ $category }} )"
                                     class="p-3 w-full cursor-pointer" type="button" value="Edit">
-                                <input wire:confirm="Are you sure?!" wire:click="delete({{ $sub_category }})"
-                                    class="p-3 w-full cursor-pointer" type="button" value="Delete">
+                                <template x-if="!deleteConfirmation">
+                                    <input x-on:click.stop="deleteConfirmation=true" class="p-3 w-full cursor-pointer"
+                                        type="button" value="Delete">
+
+                                </template>
+                                <template x-if="deleteConfirmation">
+                                    <div class=" flex items-center">
+                                        <input wire:click="delete({{ $sub_category }})"
+                                            class="p-3 w-full cursor-pointer" type="button" value="Confirm">
+                                        <input x-on:click.stop="deleteConfirmation = false"
+                                            class="p-3 w-full cursor-pointer" type="button" value="Cancel">
+                                    </div>
+                                </template>
                             </div>
                         </button>
                     </div>
