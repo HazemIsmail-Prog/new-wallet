@@ -65,7 +65,7 @@ class GetData
     public static function categories($filters)
     {
         $categories = Category::query()
-            ->where('type', $filters['type'])
+            // ->where('type', $filters['type'])
             ->withSum(['transactions as total' => function (Builder $q) use ($filters) {
                 $q->tap(fn($query) => self::categoriesFilter($query, $filters));
             }], DB::raw('amount / ' . session('activeCountry')->factor))
@@ -86,7 +86,7 @@ class GetData
             $category->grand_total = $category->total + $category->sub_categories_total;
 
             // formatters
-            $category->formatted_total = $category->total ? number_format($category->total, session('activeCountry')->decimal_points): '';
+            $category->formatted_total = number_format($category->total, session('activeCountry')->decimal_points);
             $category->formatted_sub_categories_total = number_format($category->sub_categories_total, session('activeCountry')->decimal_points);
             $category->formatted_grand_total = number_format($category->grand_total, session('activeCountry')->decimal_points);
 
