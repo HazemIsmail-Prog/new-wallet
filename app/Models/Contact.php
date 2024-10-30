@@ -14,17 +14,21 @@ class Contact extends Model
         static::addGlobalScope(function (Builder $builder) {
             $builder->where('contacts.country_id', session('activeCountry')->id);
         });
+
+        static::creating(function ($model) {
+            $model->country_id = session('activeCountry')->id;
+        });
     }
 
     // Relationship with transactions as the source entity
     public function outgoingTransactions()
     {
-        return $this->morphMany(Transaction::class, 'target')->where('type','loan_from');
+        return $this->morphMany(Transaction::class, 'target')->where('type', 'loan_from');
     }
 
     // Relationship with transactions as the target entity
     public function incomingTransactions()
     {
-        return $this->morphMany(Transaction::class, 'target')->where('type','loan_to');
+        return $this->morphMany(Transaction::class, 'target')->where('type', 'loan_to');
     }
 }

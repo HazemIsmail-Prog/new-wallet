@@ -45,9 +45,12 @@ class GetData
         });
     }
 
-    public static function contacts()
+    public static function contacts($filters = null)
     {
         $contacts = Contact::query()
+            ->when($filters, function (Builder $q) use ($filters) {
+                $q->where('name', 'like', '%' . $filters['search'] . '%');
+            })
             ->withSum('outgoingTransactions as totalOutgoing', 'amount')
             ->withSum('incomingTransactions as totalIncoming', 'amount')
             ->get();
