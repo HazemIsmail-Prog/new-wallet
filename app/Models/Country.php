@@ -4,10 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Auth;
 
 class Country extends Model
 {
     protected $guarded = [];
+
+    protected static function booted(): void
+    {
+        static::creating(function ($model) {
+            $model->user_id = Auth::id();
+        });
+    }
 
     public function wallets(): HasMany
     {
@@ -26,12 +34,12 @@ class Country extends Model
 
     public function outgoingTransactions(): HasMany
     {
-        return $this->hasMany(Transaction::class)->withoutGlobalScopes()->whereIn('type',['expense', 'loan_to']);
+        return $this->hasMany(Transaction::class)->withoutGlobalScopes()->whereIn('type', ['expense', 'loan_to']);
     }
 
     public function incomingTransactions(): HasMany
     {
-        return $this->hasMany(Transaction::class)->withoutGlobalScopes()->whereIn('type',['income', 'loan_from']);
+        return $this->hasMany(Transaction::class)->withoutGlobalScopes()->whereIn('type', ['income', 'loan_from']);
     }
 
     public function getFactorAttribute()
