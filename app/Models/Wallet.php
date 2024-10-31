@@ -15,12 +15,16 @@ class Wallet extends Model
         static::addGlobalScope(function (Builder $builder) {
             $builder->where('wallets.country_id', session('activeCountry')->id);
         });
+
+        static::creating(function ($model) {
+            $model->country_id = session('activeCountry')->id;
+        });
     }
 
     // Relationship with transactions as the source entity
     public function transactions()
     {
-        return $this->hasMany(Transaction::class,'wallet_id');
+        return $this->hasMany(Transaction::class, 'wallet_id');
     }
 
     // Relationship with transactions as the target entity

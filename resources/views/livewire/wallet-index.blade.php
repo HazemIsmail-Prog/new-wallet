@@ -1,10 +1,18 @@
 <x-slot name="header">
-    <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-        {{ __('Wallets') }}
+    <h2 class="flex items-center justify-between font-semibold text-xl base-text leading-tight">
+        <div>{{ __('Wallets') }}</div>
+        <div id="new"></div>
     </h2>
 </x-slot>
 
-<div x-data="{ editMode: false }" class="max-w-md mx-auto p-3 flex flex-col gap-3">
+<div x-data="form()" class="p-3 flex flex-col gap-3">
+
+    <template x-teleport="#new">
+        <button class=" text-sm uppercase primary-bg py-2 px-6 white-text rounded-md"
+            x-on:click="showModal()">Add</button>
+    </template>
+
+
     <div class="flex gap-3 text-gray-800 dark:text-gray-400">
         @if ($this->wallets)
             <div class="flex-1">
@@ -15,34 +23,11 @@
                 </h1>
             </div>
         @endif
-        <button wire:click="$emitTo('wallet-form','showingModal',null)">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-        </button>
-
-        @if ($this->wallets->count() > 0)
-            <button @click="editMode = !editMode">
-                <template x-if="!editMode">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                    </svg>
-                </template>
-                <template x-if="editMode">
-                    <svg x-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </template>
-            </button>
-        @endif
     </div>
+
+
     @foreach ($this->wallets as $wallet)
-        <div class=" flex items-center">
+        <div class=" flex items-center gap-3">
             <a wire:navigate href="{{ route('transaction.form.new', $wallet) }}"
                 style="background-color: {{ $wallet->color }}"
                 class="flex flex-1 justify-between items-center bg-gradient-to-bl from-gray-700/50 to-transparent  rounded-xl p-8 h-36 dark:shadow-none shadow-md shadow-gray-500 text-white">
@@ -55,26 +40,86 @@
                     </div>
                 </div>
             </a>
-            <div x-cloak class=" flex items-center gap-3 transition-all"
-                :class="{
-                    'w-[0px]': !editMode,
-                    'w-[60px] ms-4': editMode,
-                }">
-                <svg wire:click="$emitTo('wallet-form','showingModal',{{ $wallet }})"
-                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                    stroke="currentColor" class="w-6 h-6 text-indigo-600 dark:text-indigo-400">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                </svg>
-                <svg onclick="confirm('Are you sure?') || event.stopImmediatePropagation()"
-                    wire:click="delete({{ $wallet }})" xmlns="http://www.w3.org/2000/svg" fill="none"
-                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                    class="w-6 h-6 text-red-600 dark:text-red-400">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                </svg>
-            </div>
+            <button x-data="{ show: false, deleteConfirmation: false }" class=" relative"
+                x-on:click.outside="show = false ;deleteConfirmation = false"
+                x-on:click="show = !show;deleteConfirmation = false">
+                <x-svgs.vertical-dots />
+                <div x-cloak x-show="show"
+                    class=" secondary-bg base-text divide-y gray-divider absolute top-0 right-8 border gray-border shadow-md z-10 overflow-hidden rounded-lg">
+                    <a wire:navigate class="block p-3 w-full  whitespace-nowrap cursor-pointer"
+                        href="{{ route('transaction.index', ['filters[wallet_id]' => $wallet->id]) }}">
+                        View Transactions
+                    </a>
+                    <input x-on:click="showModal({{ $wallet }})" class="p-3 w-full cursor-pointer" type="button"
+                        value="Edit">
+                    <template x-if="!deleteConfirmation">
+                        <input x-on:click.stop="deleteConfirmation=true" class="p-3 w-full cursor-pointer"
+                            type="button" value="Delete">
+                    </template>
+                    <template x-if="deleteConfirmation">
+                        <div class=" flex items-center">
+                            <input wire:click="delete({{ $wallet }})" class="p-3 w-full cursor-pointer"
+                                type="button" value="Confirm">
+                            <input x-on:click.stop="deleteConfirmation = false" class="p-3 w-full cursor-pointer"
+                                type="button" value="Cancel">
+                        </div>
+                    </template>
+                </div>
+            </button>
         </div>
     @endforeach
 
+    <x-my-modal modalName="formModal" closeAction="closeModal()">
+        <form x-on:submit.prevent="save" class=" flex flex-col gap-3 items-center justify-center base-bg p-1">
+            <x-text-input x-ref="nameInput" required x-model="form.name" placeholder="Name" />
+            <x-text-input required x-model="form.init_amount" placeholder="Initial Amount" />
+            <x-text-input type="color" required x-model="form.color" placeholder="Color" />
+            <button class="primary-bg py-2 px-4 white-text rounded-md">Save</button>
+        </form>
+    </x-my-modal>
+
 </div>
+
+<script>
+    function form() {
+        return {
+            formModal: false,
+            modalTitle: '',
+            form: @entangle('form'),
+
+            init() {
+                Livewire.on('modalClosed', () => this.closeModal());
+            },
+
+            showModal(wallet = null) {
+                if (wallet) {
+                    this.modalTitle = `Edit ${wallet.name}`;
+                    this.form.id = wallet.id;
+                    this.form.name = wallet.name;
+                    this.form.init_amount = wallet.init_amount;
+                    this.form.color = wallet.color;
+                } else {
+                    this.modalTitle = 'New Wallet';
+                }
+                this.formModal = true;
+                this.$nextTick(() => this.$refs.nameInput.focus());
+            },
+
+            closeModal() {
+                this.formModal = false;
+                this.resetForm();
+            },
+
+            resetForm() {
+                this.form.id = null;
+                this.form.name = '';
+                this.form.init_amount = '';
+                this.form.color = '';
+            },
+
+            save() {
+                @this.save();
+            },
+        };
+    }
+</script>
