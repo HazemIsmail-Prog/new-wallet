@@ -43,7 +43,7 @@
             <button x-data="{ show: false, deleteConfirmation: false }" class=" relative"
                 x-on:click.outside="show = false ;deleteConfirmation = false"
                 x-on:click="show = !show;deleteConfirmation = false">
-                <x-svgs.vertical-dots />
+                <x-svgs.vertical-dots class="base-text" />
                 <div x-cloak x-show="show"
                     class=" secondary-bg base-text divide-y gray-divider absolute top-0 right-8 border gray-border shadow-md z-10 overflow-hidden rounded-lg">
                     <a wire:navigate class="block p-3 w-full  whitespace-nowrap cursor-pointer"
